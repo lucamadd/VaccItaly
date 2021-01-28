@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+    <script src="{{ url_for('static', filename= '/js/sha1.min.js') }}""></script>
 
     <style type="text/css">
         .hidden.menu {
@@ -367,16 +368,34 @@ $('.ui.form')
       },
     onSuccess: function(event){
         $('#register_form').removeClass().addClass('ui loading form segment');
-        
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('new_user') }}",
+            data: { 
+                'nome': $('#register_form').form('get value', 'nome'), 
+                'cognome': $('#register_form').form('get value', 'cognome'), 
+                'data_nascita': $('#register_form').form('get value', 'data_nascita'), 
+                'luogo_nascita': $('#register_form').form('get value', 'luogo_nascita'), 
+                'email': $('#register_form').form('get value', 'email'), 
+                'CF': $('#register_form').form('get value', 'CF'), 
+                'password': hash_SHA1($('#register_form').form('get value', 'password1')), 
+            },
+            success: function(data){
+                alert(data);
+            },
+            error: function(error) {
+              alert(error);
+            }
+        });
         event.preventDefault();
     }
     })
   ;
-  /*
-  $( "#register_form" ).submit(function( event ) {
-  alert( "Handler for .submit() called." );
-  event.preventDefault();
-});*/
+  function hash_SHA1(stringToBeHashed){
+    sha1(stringToBeHashed);
+    var hash = sha1.create();hash.update(stringToBeHashed);
+    return hash.hex();
+  }
 
   var today = new Date();
 $('#data_nascita')
