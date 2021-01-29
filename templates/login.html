@@ -161,7 +161,7 @@
             <!-- Following Menu -->
             <div class="ui large top fixed visible menu">
                 <div class="ui container">
-                    <a class="active item">Home</a>
+                    <a class="item" href="{{ url_for('index') }}">Home</a>
                     <a class="item">Campagna vaccinale</a>
                     <a class="item">Info</a>
                     <div class="right menu">
@@ -169,7 +169,7 @@
                             <a class="ui button disabled">Log in</a>
                         </div>
                         <div class="item">
-                            <a class="ui primary button">Registrati</a>
+                            <a class="ui primary button" href="{{ url_for('register') }}">Registrati</a>
                         </div>
                     </div>
                 </div>

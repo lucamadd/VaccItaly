@@ -113,7 +113,7 @@
     <!-- Following Menu -->
     <div class="ui large top fixed visible menu">
         <div class="ui container">
-            <a class="active item">Home</a>
+            <a class="item" href="{{ url_for('index') }}">Home</a>
             <a class="item">Campagna vaccinale</a>
             <a class="item">Info</a>
             <div class="right menu">
@@ -121,7 +121,7 @@
                     <a class="ui button" href="{{ url_for('login') }}">Log in</a>
                 </div>
                 <div class="item">
-                    <a class="ui primary button" href="{{ url_for('register') }}">Registrati</a>
+                    <a class="ui primary disabled button">Registrati</a>
                 </div>
             </div>
         </div>
@@ -130,7 +130,7 @@
 
     <!-- Sidebar Menu -->
     <div class="ui vertical inverted sidebar menu left">
-        <a class="active item">Home</a>
+        <a class="item" href="{{ url_for('index') }}">Home</a>
         <a class="item">Campagna vaccinale</a>
         <a class="item">Info</a>
         <a class="item" href="{{ url_for('login') }}">Login</a>
@@ -145,17 +145,17 @@
                 <a class="toc item">
                     <i class="sidebar icon"></i>
                 </a>
-                <a class="active item">Home</a>
+                <a class="item" href="{{ url_for('index') }}">Home</a>
                 <a class="item">Campagna vaccinale</a>
                 <a class="item">Info</a>
                 <div class="right item">
                     <a class="ui inverted button" href="{{ url_for('login') }}">Login</a>
-                    <a class="ui inverted button" href="{{ url_for('register') }}">Registrati</a>
+                    <a class="ui inverted disabled button">Registrati</a>
                 </div>
             </div>
         </div>
         <div class="ui vertical stripe segment">
-            <div class="ui middle aligned center aligned grid">
+            <div class="ui middle aligned center aligned grid" style="margin-top: -5em;">
                 <div class="column">
                     <h2 class="ui primary image header">
                         <img src="{{ url_for('static', filename = '/images/favicon5.png') }}" class="image">
@@ -166,7 +166,8 @@
                 </div>
             </div>
             
-            <div class="ui text container" style="margin-top: 3em;">
+            <div class="ui text container" id="form_container" style="margin-top: 3em;">
+              
                 <form class="ui form segment" id="register_form">
                     <div class="two fields">
                       <div class="field">
@@ -222,6 +223,7 @@
                     <div class="ui primary submit button">Registrati</div>
                     <div class="ui error message"></div>
                   </form>
+                  
               </div>
         </div>
 
@@ -260,6 +262,7 @@
     </div>
 </body>
 <script>
+var mysqlDate = null;
 //Calendar check dates between 1/1/1900 - 31/12/2099
 $('.ui.form')
     .form({
@@ -347,10 +350,6 @@ $('.ui.form')
           identifier: 'password2',
           rules: [
             {
-              type   : 'empty',
-              prompt : 'Inserisci la password'
-            },
-            {
               type   : 'match[password1]',
               prompt : 'Le password non corrispondono'
             }
@@ -367,6 +366,7 @@ $('.ui.form')
         }
       },
     onSuccess: function(event){
+      $('#message').remove();
         $('#register_form').removeClass().addClass('ui loading form segment');
         $.ajax({
             type: 'POST',
@@ -374,17 +374,31 @@ $('.ui.form')
             data: { 
                 'nome': $('#register_form').form('get value', 'nome'), 
                 'cognome': $('#register_form').form('get value', 'cognome'), 
-                'data_nascita': $('#register_form').form('get value', 'data_nascita'), 
+                //'data_nascita': $('#register_form').form('get value', 'data_nascita'), 
+                'data_nascita': mysqlDate, 
                 'luogo_nascita': $('#register_form').form('get value', 'luogo_nascita'), 
                 'email': $('#register_form').form('get value', 'email'), 
                 'CF': $('#register_form').form('get value', 'CF'), 
                 'password': hash_SHA1($('#register_form').form('get value', 'password1')), 
             },
             success: function(data){
-                alert(data);
+              $('#register_form').form('reset')
+              $('#register_form').removeClass().addClass('ui form segment');
+              $('#message').remove();
+                $('#form_container').prepend(data);
+                //new div is called 'message'
+                $('#message').show('fast');
             },
-            error: function(error) {
-              alert(error);
+            error: function(data) {
+              $('#register_form').removeClass().addClass('ui form segment');
+              $('#message').remove();
+              if (data){
+                $('#form_container').prepend(data);
+              } else {
+                $('#form_container').prepend('<div id="message" class="ui error mini message"\
+                style="display: none;"><div class="header">Si è verificato un errore nella registrazione</div></div>');
+              }
+              $('#message').show('fast');
             }
         });
         event.preventDefault();
@@ -423,7 +437,14 @@ $('#data_nascita')
       }
     },
     minDate: new Date(1900, today.getMonth(), today.getDate()),
-    maxDate: new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+    maxDate: new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()),
+    onChange: function(date){
+      if (!date) return '';
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        mysqlDate =  day + '/' + month + '/' + year;
+    }
   })
 ;
 </script>
