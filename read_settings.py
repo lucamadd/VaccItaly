@@ -1,5 +1,5 @@
 
-def read(val):
+def read(section, val):
     try:
         from configparser import ConfigParser
     except ImportError:
@@ -9,7 +9,7 @@ def read(val):
     config = ConfigParser()
 
     # parse existing file
-    config.read('db_config.ini')
+    config.read('config.ini')
 
     # read values from a section
-    return config.get('DB_SETTINGS', val)
+    return config.get(section, val)

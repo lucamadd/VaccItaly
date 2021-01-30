@@ -9,13 +9,14 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
         
             <!-- Site Properties -->
-            <title>VaccItaly</title>
+            <title>Login</title>
             <link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}"/>
             <!-- You MUST include jQuery before Fomantic -->
             <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
             <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
             <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
-        
+            <script src="{{ url_for('static', filename= '/js/sha1.min.js') }}""></script>
+
             <style type="text/css">
             body>.grid {
             height: 100%;
@@ -32,31 +33,7 @@
                     display: none;
                 }
         
-                .masthead.segment {
-                    min-height: 300px;
-                    padding: 1em 0em;
-                }
-        
-                .masthead .logo.item img {
-                    margin-right: 1em;
-                }
-        
-                .masthead .ui.menu .ui.button {
-                    margin-left: 0.5em;
-                }
-        
-                .masthead h1.ui.header {
-                    margin-top: 0.3em;
-                    margin-bottom: 0em;
-                    font-size: 4em;
-                    font-weight: normal;
-                }
-        
-                .masthead h2 {
-                    font-size: 1.7em;
-                    font-weight: normal;
-                }
-        
+                
                 .ui.vertical.stripe {
                     padding: 8em 0em;
                 }
@@ -132,19 +109,7 @@
                 $(document)
                     .ready(function () {
         
-                        // fix menu when passed
-                        $('.masthead')
-                            .visibility({
-                                once: false,
-                                onBottomPassed: function () {
-                                    $('.fixed.menu').transition('fade in');
-                                },
-                                onBottomPassedReverse: function () {
-                                    $('.fixed.menu').transition('fade out');
-                                }
-                            })
-                            ;
-        
+                    
                         // create sidebar and attach to menu open
                         $('.ui.sidebar')
                             .sidebar('attach events', '.toc.item')
@@ -152,36 +117,57 @@
         
                     })
                     ;
-
             </script>
         </head>
         
         <body class="pushable">
-        
             <!-- Following Menu -->
-            <div class="ui large top fixed visible menu">
-                <div class="ui container">
-                    <a class="item" href="{{ url_for('index') }}">Home</a>
-                    <a class="item">Campagna vaccinale</a>
-                    <a class="item">Info</a>
-                    <div class="right menu">
-                        <div class="item">
-                            <a class="ui button disabled">Log in</a>
-                        </div>
-                        <div class="item">
-                            <a class="ui primary button" href="{{ url_for('register') }}">Registrati</a>
-                        </div>
-                    </div>
+    <div class="ui large top fixed visible menu">
+        <div class="ui container">
+            <a class="item" href="{{ url_for('index') }}">Home</a>
+            <a class="item">Campagna vaccinale</a>
+            <a class="item">Info</a>
+            <div class="right menu">
+                <div class="item">
+                    <a class="ui disabled button">Log in</a>
+                </div>
+                <div class="item">
+                    <a class="ui primary button" href="{{ url_for('register') }}">Registrati</a>
                 </div>
             </div>
+        </div>
+    </div>
+
+
+    <!-- Sidebar Menu -->
+    <div class="ui vertical inverted sidebar menu left">
+        <a class="item" href="{{ url_for('index') }}">Home</a>
+        <a class="item">Campagna vaccinale</a>
+        <a class="item">Info</a>
+        <a class="item" href="{{ url_for('login') }}">Login</a>
+        <a class="item" href="{{ url_for('register') }}">Registrati</a>
+    </div>
         
             <!-- Page Contents -->
             <div class="pusher">
-                
+                <div class="ui container">
+                    <div class="ui large primary menu">
+                        <a class="toc item">
+                            <i class="sidebar icon"></i>
+                        </a>
+                        <a class="item" href="{{ url_for('index') }}">Home</a>
+                        <a class="item">Campagna vaccinale</a>
+                        <a class="item">Info</a>
+                        <div class="right item">
+                            <a class="ui inverted disabled button" >Login</a>
+                            <a class="ui inverted button" href="{{ url_for('register') }}">Registrati</a>
+                        </div>
+                    </div>
+                </div>
                 
         
                 <div class="ui vertical stripe segment">
-                    <div class="ui middle aligned center aligned grid">
+                    <div class="ui middle aligned center aligned grid" >
                         <div class="column">
                             <h2 class="ui primary image header">
                                 <img src="{{ url_for('static', filename = '/images/favicon5.png') }}" class="image">
@@ -189,39 +175,38 @@
                                     Accedi al tuo account
                                 </div>
                             </h2>
-                            <form class="ui large form error">
-                                <div class="ui stacked segment">
-                                    <div class="field error">
-                                        <div class="ui left icon input">
-                                            <i class="user icon"></i>
-                                            <input type="text" name="email" placeholder="E-mail address">
-                                        </div>
-                                    </div>
-                                    <div class="field error">
-                                        <div class="ui left icon input">
-                                            <i class="lock icon"></i>
-                                            <input type="password" name="password" placeholder="Password">
-                                        </div>
-                                    </div>
-                                    <div class="ui fluid large primary submit button">Login</div>
-                                </div>
-                
-                                <div class="ui error message">
-                                    <ul class="list">
-                                        <li>Inserisci la tua mail o il tuo codice fiscale</li>
-                                        <li>Assicurati che la mail o il codice fiscale siano validi</li>
-                                        <li>Inserisci la tua password</li>
-                                        <li>Your password must be at least 6 characters</li>
-                                    </ul>
-                                </div>
-                
-                            </form>
-                
-                            <div class="ui message">
-                                Non possiedi un account? <a href="#">Registrati</a>
-                            </div>
                         </div>
                     </div>
+                    
+                    <div class="doubling stackable three column ui grid container"  style="margin-top: 3em;">
+                      <div class="column"></div>
+                      <div id="form_container" class="column">
+                        <form class="ui form segment" id="login_form">
+                              <div class="field">
+                                <label>Email o codice fiscale</label>
+                                <input placeholder="" name="email" type="email">
+                              </div>
+                                <div class="field">
+                                    <label>Password</label>
+                                    <input type="password" name="password">
+                                  </div>
+                            <div class="inline field">
+                            </div>
+                            <div class="ui primary submit button">Login</div>
+                            <div class="ui error message"></div>
+                          </form>
+                          <div class="ui mini message">
+                              <div class="ui header">
+                                Non possiedi un account? <a href="{{ url_for('register') }}"> Registrati</a>
+                              </div>
+                              <div class="ui header" style="margin-top: 0.5em;">
+                                Hai dimenticato la password? <a href="#"> Recupera </a>
+                              </div>
+                          </div>
+                        </div>
+                          <div class="column"></div>
+                          
+                      </div>
                 </div>
         
         
@@ -234,7 +219,7 @@
                                 <h4 class="ui inverted header">Info</h4>
                                 <div class="ui inverted link list">
                                     <a href="#" class="item">Sitemap</a>
-                                    <a href="#" class="item">Contattaci</a>
+                                    <a href="mailto:l.maddaluno1@studenti.unisa.it?subject=[VaccItaly]%20Segnalazione%20bug" class="item">Segnala un bug</a>
                                     <a href="#" class="item">Informazioni sui vaccini</a>
                                 </div>
                             </div>
@@ -267,11 +252,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: 'Please enter your e-mail'
-                                    },
-                                    {
-                                        type: 'email',
-                                        prompt: 'Please enter a valid e-mail'
+                                        prompt: 'Inserisci la tua email o il codice fiscale'
                                     }
                                 ]
                             },
@@ -280,17 +261,59 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: 'Please enter your password'
-                                    },
-                                    {
-                                        type: 'length[6]',
-                                        prompt: 'Your password must be at least 6 characters'
+                                        prompt: 'Inserisci la password'
                                     }
                                 ]
                             }
-                        }
+                        },
+                        onSuccess: function(event){
+      $('#message').remove();
+        $('#login_form').removeClass().addClass('ui loading form segment');
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('log_user') }}",
+            data: { 
+                'email': $('#login_form').form('get value', 'email'), 
+                'password': hash_SHA1($('#login_form').form('get value', 'password')), 
+            },
+            success: function(data){
+              $('#login_form').form('reset');
+              $('#login_form').removeClass().addClass('ui form segment');
+              $('#message').remove();
+                $('#form_container').prepend(data);
+                //new div is called 'message'
+                $('#message').show('fast');
+                if ($('#message').attr('class') == 'ui success mini message'){
+                    setTimeout(
+                        function() 
+                        {
+                            window.location.href = "{{ url_for('profile') }}";
+                        }, 1000);
+                }
+                   
+            },
+            error: function(data) {
+              $('#login_form').removeClass().addClass('ui form segment');
+              $('#message').remove();
+              if (data){
+                $('#form_container').prepend(data);
+              } else {
+                $('#form_container').prepend('<div id="message" class="ui error mini message"\
+                style="display: none;"><div class="header">Si è verificato un errore nell\'accesso</div></div>');
+              }
+              $('#message').show('fast');
+            }
+        });
+        event.preventDefault();
+    }
                     })
                     ;
+
+    function hash_SHA1(stringToBeHashed){
+    sha1(stringToBeHashed);
+    var hash = sha1.create();hash.update(stringToBeHashed);
+    return hash.hex();
+  }
         </script>
         
         </html>

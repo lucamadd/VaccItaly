@@ -21,7 +21,6 @@
         }
 
         
-
         .ui.vertical.stripe {
             padding: 8em 0em;
         }
@@ -137,7 +136,6 @@
         <a class="item" href="{{ url_for('register') }}">Registrati</a>
     </div>
 
-
     <!-- Page Contents -->
     <div class="pusher">
         <div class="ui container">
@@ -223,7 +221,9 @@
                     <div class="ui primary submit button">Registrati</div>
                     <div class="ui error message"></div>
                   </form>
-                  
+                  <div id="mini_message" class="ui mini message">
+                    <div class="header">Già possiedi un account? <a href="{{ url_for('login') }}"> Login</a></div>
+                  </div>
               </div>
         </div>
 
@@ -237,7 +237,7 @@
                         <h4 class="ui inverted header">Info</h4>
                         <div class="ui inverted link list">
                             <a href="#" class="item">Sitemap</a>
-                            <a href="#" class="item">Contattaci</a>
+                            <a href="mailto:l.maddaluno1@studenti.unisa.it?subject=[VaccItaly]%20Segnalazione%20bug" class="item">Segnala un bug</a>
                             <a href="#" class="item">Informazioni sui vaccini</a>
                         </div>
                     </div>
@@ -382,7 +382,9 @@ $('.ui.form')
                 'password': hash_SHA1($('#register_form').form('get value', 'password1')), 
             },
             success: function(data){
-              $('#register_form').form('reset')
+              $('#register_form').form('reset');
+              $("#register_form").css("visibility", "hidden");
+              $("#mini_message").css("visibility", "hidden");
               $('#register_form').removeClass().addClass('ui form segment');
               $('#message').remove();
                 $('#form_container').prepend(data);
