@@ -118,7 +118,10 @@
     <script>
         $(document)
             .ready(function () {
-                $('.ui.dropdown').dropdown();
+                $('.ui.dropdown').dropdown({
+            on: 'hover',
+            allowCategorySelection: true
+            });
                 // fix menu when passed
                 $('.masthead')
                     .visibility({
@@ -152,7 +155,7 @@
             <a class="item">Info</a>
             <div class="right menu">
                 {% if session['nome'] %}
-                <div class="ui dropdown item">
+                <div class="ui dropdown item" onclick="openProfile()">
                     {{ session['nome'] }} <i class="dropdown icon"></i>
                     <div class="menu">
                       <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -177,7 +180,7 @@
         <a class="item">Campagna vaccinale</a>
         <a class="item">Info</a>
         {% if session['nome'] %}
-        <div class="ui dropdown item">
+        <div class="ui dropdown item" onclick="openProfile()">
             {{ session['nome'] }} <i class="dropdown icon"></i>
             <div class="menu">
               <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -204,7 +207,7 @@
                     <a class="item">Info</a>
                     <div class="right item">
                         {% if session['nome'] %}
-                        <div class="ui dropdown item">
+                        <div class="ui dropdown item" onclick="openProfile()">
                             {{ session['nome'] }} <i class="dropdown icon"></i>
                             <div class="menu">
                               <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -253,38 +256,14 @@
 
 
 
-
-        <div class="ui inverted vertical footer segment">
-            <div class="ui container">
-                <div class="ui stackable inverted divided equal height stackable grid">
-                    <div class="three wide column">
-                        <h4 class="ui inverted header">Info</h4>
-                        <div class="ui inverted link list">
-                            <a href="#" class="item">Sitemap</a>
-                            <a href="mailto:l.maddaluno1@studenti.unisa.it?subject=[VaccItaly]%20Segnalazione%20bug" class="item">Segnala un bug</a>
-                            <a href="#" class="item">Informazioni sui vaccini</a>
-                        </div>
-                    </div>
-                    <!--
-                    <div class="three wide column">
-                        <h4 class="ui inverted header">Title</h4>
-                        <div class="ui inverted link list">
-                            <a href="#" class="item">Service</a>
-                            <a href="#" class="item">Service</a>
-                            <a href="#" class="item">Service</a>
-                            <a href="#" class="item">Service</a>
-                        </div>
-                    </div>
-                    -->
-                    <div class="seven wide column">
-                        <h4 class="ui inverted header">Cloud Computing 2020/2021</h4>
-                        <p>Progetto accademico per l'Università degli Studi di Salerno</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {% include 'footer.html' %}
+        
     </div>
 </body>
-
+<script>
+    function openProfile(){
+        window.location.href="{{url_for('profile')}}";
+    }
+</script>
 
 </html>
