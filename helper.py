@@ -1,6 +1,5 @@
-from flask.templating import render_template
-from flask_mail import Mail, Message
-import smtplib, markdown
+from flask.templating import
+import smtplib
 
 def send_registration_email(recipient, name):
     server = smtplib.SMTP('smtp.gmail.com', 587) 
