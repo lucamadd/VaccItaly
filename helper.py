@@ -1,5 +1,8 @@
-from flask.templating import
+import random
+from flask import jsonify
+import time
 import smtplib
+import csv
 
 def send_registration_email(recipient, name):
     server = smtplib.SMTP('smtp.gmail.com', 587) 
@@ -39,3 +42,26 @@ def send_registration_email(recipient, name):
 
     server.sendmail('info.vaccitaly@gmail.com', recipient,
                                 multipart_msg.as_string().encode('utf-8'))
+
+
+def get_elenco_comuni(regione):
+        f = open('asl.csv')
+        csv_f = csv.reader(f)
+
+        lista_comuni = []
+        
+        for row in csv_f:
+                dictionary = {}
+                row = row[0].split(';')
+                #print(row[6])
+                dictionary['category'] = row[2].strip().title()
+                dictionary['name'] = row[6].title()
+                dictionary['value'] = row[6].title()
+                dictionary['asl'] = row[4].title()
+                #print(dictionary)
+                if (dictionary['category'] == regione):
+                        lista_comuni.append(dictionary)
+        return jsonify(lista_comuni)
+        
+def get_numero_vaccini(regione):
+        return "{:,}".format(random.randint(10000, 90000))
