@@ -12,7 +12,7 @@ config = {
   'ssl_disabled': False
 }
 
-def new_user(cod_fis, email, nome, cognome, data_nascita, luogo_nascita, password):
+def new_user(nome, cognome, data_nascita, luogo_nascita, email, cod_fis, password):
     try:
         conn = mysql.connector.connect(**config)
         print("Connection established")
