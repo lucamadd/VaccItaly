@@ -62,7 +62,7 @@ def log_user():
     password = data['password']
     print(email, password)
 
-    return log_user(email, password, session)
+    return db.log_user(email, password, session)
 
     
     
@@ -103,7 +103,7 @@ def get_elenco_comuni():
         return helper.get_elenco_comuni(regione)
     return redirect(url_for('index'))
 
-@app.route('/get_numero_vaccini', methods = ['POST', 'OPTIONS']) 
+@app.route('/get_numero_vaccini', methods = ['GET', 'POST', 'OPTIONS']) 
 def get_numero_vaccini():
     if 'loggedin' in session:
         data = request.form

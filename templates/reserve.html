@@ -296,8 +296,8 @@
             <div class="column">
               <div class="ui fluid buttons">
                 <button class="ui primary labeled icon button disabled" id="indietro">
-                  <i class="left chevron icon"></i>
-                  Indietro
+                  <i class="undo icon"></i>
+                  Ricomincia
                 </button>
                 <button class="ui primary right labeled icon button disabled" id="avanti">
                   Avanti
@@ -335,7 +335,7 @@
   </div>
 </body>
 <script>
-  
+   
 var nomi_asl;
     $('#reserve_button').click(function() {
       //$('#first_segment').css("visibility", "collapse");
@@ -414,7 +414,7 @@ var nomi_asl;
         $('#step3').removeClass().addClass('step');
         $('#segment2').css("display", "none");
         $('#segment3').css("display", "block");
-        $('#avanti').removeClass().addClass('ui green right disabled labeled icon button');
+        $('#avanti').removeClass().addClass('ui green right labeled disabled icon button');
         $('#avanti').html('Conferma<i class="check icon"></i>');
       }
       //if step3
@@ -433,6 +433,9 @@ var nomi_asl;
         )
         .modal('show');
       }
+    });
+    $('#indietro').click(function() {
+      location.reload(true);
     });
     $('#select_regione').change(function(){
       $('#avanti').removeClass().addClass('ui primary right labeled icon button');
