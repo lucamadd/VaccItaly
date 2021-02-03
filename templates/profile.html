@@ -157,161 +157,250 @@
       </div>
     </div>
 
-    <h1 class="ui center aligned header">Profilo</h1>
-
+    {% if session['cod_fis'] == 'global_admin' %}
+    <h4 class="ui horizontal divider header" style="margin-top: 2em; margin-bottom: 2em;">
+      <i class="user cog icon"></i>
+      Pannello di amministrazione
+    </h4>
+    <div class="ui container">
+      <div class="ui mobile reversed grid">
+        <div class="four wide computer only column">
+          <div class="ui secondary vertical pointing fluid menu">
+            <a class="item active">
+              Vaccini
+              <i class="syringe icon"></i>
+            </a>
+            <a href="{{ url_for('test')}}" class="item">
+              Amministratori regionali
+              <i class="user cog icon"></i>
+            </a>
+          </div>
+          <div class="ui card" style="margin-top: 6em;">
+            <div class="content">
+              <div class="header">Prenotazioni</div>
+              <div class="description">
+                <span class="right floated time">1.209</span>
+                <span class="category">In attesa</span>
+              </div>
+              <div class="description">
+                <span class="right floated time">9.344</span>
+              <span class="category">Completate</span>
+              </div>
+            </div>
+            <div class="extra content">
+              <div class="meta">
+                <span class="right floated time">10.553</span>
+                <span class="category">Totale</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sixteen wide mobile twelve wide computer column">
+          <table class="ui compact celled unstackable table">
+            <thead>
+              <tr><th>Regione</th>
+              <th>N° ASL</th>
+              <th>Vaccini disponibili</th>
+              <th class="collapsing">Modifica</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td data-label="Regione">Abruzzo</td>
+                <td data-label="N° ASL">4</td>
+                <td id="vaccini_abruzzo" data-label="Vaccini disponibili">45</td>
+                <td id="vaccini_abruzzo_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Basilicata</td>
+                <td data-label="N° ASL">2</td>
+                <td id="vaccini_basilicata" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_basilicata_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Calabria</td>
+                <td data-label="N° ASL">5</td>
+                <td id="vaccini_calabria" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_calabria_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Campania</td>
+                <td data-label="N° ASL">7</td>
+                <td id="vaccini_campania" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_campania_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Emilia Romagna</td>
+                <td data-label="N° ASL">8</td>
+                <td id="vaccini_emiliaromagna" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_emiliaromagna_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Friuli Venezia Giulia</td>
+                <td data-label="N° ASL">5</td>
+                <td id="vaccini_friuliveneziagiulia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_friuliveneziagiulia_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Lazio</td>
+                <td data-label="N° ASL">10</td>
+                <td id="vaccini_lazio" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_lazio_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Liguria</td>
+                <td data-label="N° ASL">5</td>
+                <td id="vaccini_liguria" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_liguria_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Lombardia</td>
+                <td data-label="N° ASL">8</td>
+                <td id="vaccini_lombardia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_lombardia_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Marche</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_marche" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_marche_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Molise</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_molise" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_molise_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Piemonte</td>
+                <td data-label="N° ASL">12</td>
+                <td id="vaccini_piemonte" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_piemonte_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Prov. Auton. Bolzano</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_pabolzano" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_pabolzano_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Prov. Auton. Trento</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_patrento" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_patrento_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Puglia</td>
+                <td data-label="N° ASL">6</td>
+                <td id="vaccini_puglia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_puglia_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Sardegna</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_sardegna" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_sardegna_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Sicilia</td>
+                <td data-label="N° ASL">9</td>
+                <td id="vaccini_sicilia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_sicilia_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Toscana</td>
+                <td data-label="N° ASL">3</td>
+                <td id="vaccini_toscana" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_toscana_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Umbria</td>
+                <td data-label="N° ASL">2</td>
+                <td id="vaccini_umbria" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_umbria_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Valle D'Aosta</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_valledaosta" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_valledaosta_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Veneto</td>
+                <td data-label="N° ASL">9</td>
+                <td id="vaccini_veneto" data-label="Vaccini disponibili">
+                  <div class="ui transparent fluid input disabled">
+                    <input type="text" value="24">
+                  </div>
+                </td>
+                <td id="vaccini_veneto_edit" class="selectable collapsing center aligned" data-label="Modifica">
+                  <i class="edit icon"></i>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr><th><b>Totale</b></th>
+              <th><b>101</b></th>
+              <th id="vaccini_totale"><b>67</b></th>
+              <th class="collapsing"></th>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <h4 class="ui horizontal divider header">
+      <i class="user icon"></i>
+      Profilo
+    </h4>
+    {% endif %}
 
     {% include 'footer.html' %}
   </div>
 </body>
 <script>
-  //Calendar check dates between 1/1/1900 - 31/12/2099
-  $('.ui.form')
-    .form({
-      fields: {
-        nome: {
-          identifier: 'nome',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci il tuo nome'
-            }
-          ]
-        },
-        cognome: {
-          identifier: 'cognome',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci il tuo cognome'
-            }
-          ]
-        },
-        datanascita: {
-          identifier: 'data_nascita',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci la data di nascita'
-            },
-            {
-              type: 'regExp[(^((((0[1-9])|([1-2][0-9])|(3[0-1]))|([1-9]))\\x2F(((0[1-9])|(1[0-2]))|([1-9]))\\x2F(([0-9]{2})|(((19)|([2]([0]{1})))([0-9]{2}))))$)]',
-              prompt: 'Inserisci una data valida'
-            }
-          ]
-        },
-        luogonascita: {
-          identifier: 'luogo_nascita',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci il luogo di nascita'
-            }
-          ]
-        },
-        email: {
-          identifier: 'email',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci il tuo indirizzo email'
-            },
-            {
-              type: 'email',
-              prompt: 'Inserisci una mail valida'
-            }
-          ]
-        },
-        cod_fis: {
-          identifier: 'CF',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci il tuo codice fiscale'
-            },
-            {
-              type: 'regExp[^([A-Za-z]{6}[0-9lmnpqrstuvLMNPQRSTUV]{2}[abcdehlmprstABCDEHLMPRST]{1}[0-9lmnpqrstuvLMNPQRSTUV]{2}[A-Za-z]{1}[0-9lmnpqrstuvLMNPQRSTUV]{3}[A-Za-z]{1})|([0-9]{11})$]',
-              prompt: 'Inserisci un codice fiscale valido'
-            }
-          ]
-        },
-        password1: {
-          identifier: 'password1',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci la password'
-            },
-            {
-              type: 'minLength[6]',
-              prompt: 'La password deve essere almeno di {ruleValue} caratteri'
-            }
-          ]
-        },
-        password2: {
-          identifier: 'password2',
-          rules: [
-            {
-              type: 'empty',
-              prompt: 'Inserisci la password'
-            },
-            {
-              type: 'match[password1]',
-              prompt: 'Le password non corrispondono'
-            }
-          ]
-        },
-        terms: {
-          identifier: 'terms',
-          rules: [
-            {
-              type: 'checked',
-              prompt: 'Devi accettare i termini e le condizioni'
-            }
-          ]
-        }
-      },
-      onSuccess: function (event) {
-        $('#register_form').removeClass().addClass('ui loading form segment');
-
-        event.preventDefault();
-      }
-    })
-    ;
-  /*
-  $( "#register_form" ).submit(function( event ) {
-  alert( "Handler for .submit() called." );
-  event.preventDefault();
-});*/
-
-  var today = new Date();
-  $('#data_nascita')
-    .calendar({
-      type: 'date',
-      monthFirst: false,
-      startMode: 'year',
-      firstDayOfWeek: 1,
-      text: {
-        days: ['D', 'L', 'M', 'M', 'G', 'V', 'S'],
-        months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-        monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
-        today: 'Oggi',
-        now: 'Ora',
-        am: 'AM',
-        pm: 'PM'
-      },
-      formatter: {
-        date: function (date, settings) {
-          if (!date) return '';
-          var day = date.getDate();
-          var month = date.getMonth() + 1;
-          var year = date.getFullYear();
-          return day + '/' + month + '/' + year;
-        }
-      },
-      minDate: new Date(1900, today.getMonth(), today.getDate()),
-      maxDate: new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
-    })
-    ;
+  $('.selectable.collapsing.center.aligned').click( function(event) {
+    console.log(event.currentTarget);
+  });
 </script>
 
 </html>
