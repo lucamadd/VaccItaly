@@ -3,6 +3,8 @@ from flask_cors import cross_origin, CORS
 from flask_mail import Mail
 import helper
 import db_functions as db
+import traceback
+
 
 import read_settings
 import os
@@ -19,6 +21,7 @@ app = Flask(__name__,
 CORS(app)
 
 mail = Mail(app) # instantiate the mail class 
+
    
 # configuration of mail 
 app.config['MAIL_SERVER']= read_settings.read('EMAIL_SETTINGS', 'MAIL_SERVER')
@@ -111,6 +114,16 @@ def get_numero_vaccini():
         return helper.get_numero_vaccini(regione)
     return redirect(url_for('index'))
 
+@app.errorhandler(500)
+def internal_server_error(e):
+    #set the 500 status explicitly
+    return render_template('500.html'), 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    helper.send_bug_report_msg(session, type(e), str(e), traceback.format_exc())
+    return render_template('error.html')
+
 if __name__ == '__main__':
     try:
         app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -119,3 +132,8 @@ if __name__ == '__main__':
         
     except RuntimeError as msg:
         exit()
+
+    except Exception as e:
+        #print("type error: " + str(e))
+        #print(traceback.format_exc())
+        helper.send_bug_report_msg(sys.exc_info()[0])
