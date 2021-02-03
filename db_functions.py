@@ -59,12 +59,13 @@ def log_user(email, password, session):
     else:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT nome FROM db_utente WHERE (email = %s AND password = %s) OR (cod_fis = %s AND password = %s)", 
+            cursor.execute("SELECT nome, cod_fis FROM db_utente WHERE (email = %s AND password = %s) OR (cod_fis = %s AND password = %s)", 
             (email, password, email, password))
             result = cursor.fetchone()
             if cursor.rowcount == 1:
                 session['loggedin'] = True
                 session['nome'] = result[0]
+                session['cod_fis'] = result[1]
             else:
                 msg = '<div id="message" class="ui error mini message" style="display: none;">\
                 <div class="header">Credenziali errate</div></div>'
