@@ -114,6 +114,10 @@ def get_numero_vaccini():
         return helper.get_numero_vaccini(regione)
     return redirect(url_for('index'))
 
+@app.route('/edit_vaccini', methods = ['GET', 'POST', 'OPTIONS']) 
+def edit_vaccini():
+    return ''    
+
 @app.errorhandler(500)
 def internal_server_error(e):
     #set the 500 status explicitly
@@ -132,8 +136,3 @@ if __name__ == '__main__':
         
     except RuntimeError as msg:
         exit()
-
-    except Exception as e:
-        #print("type error: " + str(e))
-        #print(traceback.format_exc())
-        helper.send_bug_report_msg(sys.exc_info()[0])
