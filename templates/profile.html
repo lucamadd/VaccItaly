@@ -111,7 +111,7 @@
 </head>
 
 <body class="pushable">
-
+  
   <!-- Following Menu -->
   <div class="ui large top fixed visible menu">
     <div class="ui container">
@@ -163,14 +163,15 @@
       Pannello di amministrazione
     </h4>
     <div class="ui container">
+      
       <div class="ui mobile reversed grid">
         <div class="four wide computer only column">
           <div class="ui secondary vertical pointing fluid menu">
-            <a class="item active">
+            <a id="left_menu_first_button" class="item active">
               Vaccini
               <i class="syringe icon"></i>
             </a>
-            <a href="{{ url_for('test')}}" class="item">
+            <a id="left_menu_second_button" class="item">
               Amministratori regionali
               <i class="user cog icon"></i>
             </a>
@@ -195,8 +196,8 @@
             </div>
           </div>
         </div>
-        <div class="sixteen wide mobile twelve wide computer column">
-          <table class="ui compact celled unstackable table">
+        <div id="div_vaccini" class="sixteen wide mobile twelve wide computer column" style="display: block;">
+          <table id="tab_vaccini" class="ui compact celled unstackable table">
             <thead>
               <tr><th>Regione</th>
               <th>N° ASL</th>
@@ -207,161 +208,203 @@
               <tr>
                 <td data-label="Regione">Abruzzo</td>
                 <td data-label="N° ASL">4</td>
-                <td id="vaccini_abruzzo" data-label="Vaccini disponibili">45</td>
+                <td id="vaccini_abruzzo" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_abruzzo_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Basilicata</td>
                 <td data-label="N° ASL">2</td>
-                <td id="vaccini_basilicata" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_basilicata" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_basilicata_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Calabria</td>
                 <td data-label="N° ASL">5</td>
-                <td id="vaccini_calabria" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_calabria" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_calabria_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Campania</td>
                 <td data-label="N° ASL">7</td>
-                <td id="vaccini_campania" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_campania" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_campania_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Emilia Romagna</td>
                 <td data-label="N° ASL">8</td>
-                <td id="vaccini_emiliaromagna" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_emiliaromagna" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_emiliaromagna_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Friuli Venezia Giulia</td>
                 <td data-label="N° ASL">5</td>
-                <td id="vaccini_friuliveneziagiulia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_friuliveneziagiulia" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_friuliveneziagiulia_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Lazio</td>
                 <td data-label="N° ASL">10</td>
-                <td id="vaccini_lazio" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_lazio" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_lazio_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Liguria</td>
                 <td data-label="N° ASL">5</td>
-                <td id="vaccini_liguria" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_liguria" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_liguria_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Lombardia</td>
                 <td data-label="N° ASL">8</td>
-                <td id="vaccini_lombardia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_lombardia" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_lombardia_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Marche</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_marche" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_marche" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_marche_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Molise</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_molise" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_molise" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_molise_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Piemonte</td>
                 <td data-label="N° ASL">12</td>
-                <td id="vaccini_piemonte" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_piemonte" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_piemonte_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Prov. Auton. Bolzano</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_pabolzano" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_pabolzano" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_pabolzano_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Prov. Auton. Trento</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_patrento" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_patrento" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_patrento_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Puglia</td>
                 <td data-label="N° ASL">6</td>
-                <td id="vaccini_puglia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_puglia" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_puglia_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Sardegna</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_sardegna" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_sardegna" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_sardegna_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Sicilia</td>
                 <td data-label="N° ASL">9</td>
-                <td id="vaccini_sicilia" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_sicilia" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_sicilia_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Toscana</td>
                 <td data-label="N° ASL">3</td>
-                <td id="vaccini_toscana" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_toscana" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_toscana_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Umbria</td>
                 <td data-label="N° ASL">2</td>
-                <td id="vaccini_umbria" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_umbria" data-label="Vaccini disponibili"><div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div></td>
                 <td id="vaccini_umbria_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
                 <td data-label="Regione">Valle D'Aosta</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_valledaosta" data-label="Vaccini disponibili">24</td>
+                <td id="vaccini_valledaosta" data-label="Vaccini disponibili">
+                  <div class="ui transparent fluid input disabled">
+                    <input type="number" value="22">
+                  </div>
+                </td>
                 <td id="vaccini_valledaosta_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
               <tr>
@@ -369,11 +412,11 @@
                 <td data-label="N° ASL">9</td>
                 <td id="vaccini_veneto" data-label="Vaccini disponibili">
                   <div class="ui transparent fluid input disabled">
-                    <input type="text" value="24">
+                    <input type="number" value="22">
                   </div>
                 </td>
                 <td id="vaccini_veneto_edit" class="selectable collapsing center aligned" data-label="Modifica">
-                  <i class="edit icon"></i>
+                  <i class="pen icon"></i>
                 </td>
               </tr>
             </tbody>
@@ -384,6 +427,131 @@
               <th class="collapsing"></th>
             </tr></tfoot>
           </table>
+        
+        </div>
+        <div id="div_amministratori_regionali" class="sixteen wide mobile twelve wide computer column" style="display: none;">
+          <table class="ui compact celled unstackable table">
+            <thead>
+              <tr><th>Regione</th>
+              <th>N° ASL</th>
+              <th>Amm. regionali</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td data-label="Regione">Abruzzo</td>
+                <td data-label="N° ASL">4</td>
+                <td id="vaccini_abruzzo" data-label="Amm. regionali">35</td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Basilicata</td>
+                <td data-label="N° ASL">2</td>
+                <td id="vaccini_basilicata" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Calabria</td>
+                <td data-label="N° ASL">5</td>
+                <td id="vaccini_calabria" data-label="Amm. regionali"></td>
+                
+              </tr>
+              <tr>
+                <td data-label="Regione">Campania</td>
+                <td data-label="N° ASL">7</td>
+                <td id="vaccini_campania" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Emilia Romagna</td>
+                <td data-label="N° ASL">8</td>
+                <td id="vaccini_emiliaromagna" data-label="Amm. regionali"></td>
+                
+              </tr>
+              <tr>
+                <td data-label="Regione">Friuli Venezia Giulia</td>
+                <td data-label="N° ASL">5</td>
+                <td id="vaccini_friuliveneziagiulia" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Lazio</td>
+                <td data-label="N° ASL">10</td>
+                <td id="vaccini_lazio" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Liguria</td>
+                <td data-label="N° ASL">5</td>
+                <td id="vaccini_liguria" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Lombardia</td>
+                <td data-label="N° ASL">8</td>
+                <td id="vaccini_lombardia" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Marche</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_marche" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Molise</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_molise" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Piemonte</td>
+                <td data-label="N° ASL">12</td>
+                <td id="vaccini_piemonte" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Prov. Auton. Bolzano</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_pabolzano" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Prov. Auton. Trento</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_patrento" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Puglia</td>
+                <td data-label="N° ASL">6</td>
+                <td id="vaccini_puglia" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Sardegna</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_sardegna" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Sicilia</td>
+                <td data-label="N° ASL">9</td>
+                <td id="vaccini_sicilia" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Toscana</td>
+                <td data-label="N° ASL">3</td>
+                <td id="vaccini_toscana" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Umbria</td>
+                <td data-label="N° ASL">2</td>
+                <td id="vaccini_umbria" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Valle D'Aosta</td>
+                <td data-label="N° ASL">1</td>
+                <td id="vaccini_valledaosta" data-label="Amm. regionali"></td>
+              </tr>
+              <tr>
+                <td data-label="Regione">Veneto</td>
+                <td data-label="N° ASL">9</td>
+                <td id="vaccini_veneto" data-label="Amm. regionali"></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr><th><b>Totale</b></th>
+              <th><b>101</b></th>
+              <th id="vaccini_totale"><b>67</b></th>
+            </tr></tfoot>
+          </table>
+        
         </div>
       </div>
     </div>
@@ -399,7 +567,48 @@
 </body>
 <script>
   $('.selectable.collapsing.center.aligned').click( function(event) {
-    console.log(event.currentTarget);
+    var selected = event.currentTarget.id
+    selected = selected.substring(0, selected.length - 5);
+    //se sto salvando
+    if (this.innerHTML == '<i class="save icon"></i>'){
+      if ($('#' + selected).children().children().val() < 0 || $('#' + selected).children().children().val() > 60000000){
+        $('#' + selected).removeClass().addClass('error');
+        $('#' + selected).attr('data-tooltip','Inserisci un valore valido');
+      } else {
+        $('#' + selected).children().removeClass().addClass('ui transparent fluid input disabled')
+        this.innerHTML = '<div class="ui active centered inline tiny loader"></div>'
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('edit_vaccini') }}",
+            data: { 
+                'regione': selected.substring(8, selected.length),
+                'num_vaccini': $('#' + selected).children().children().val()
+            },
+            success: function(data){
+              
+            },
+            error: function(data) {
+              
+            }
+        });
+      }
+    } 
+    else { //se sto modificando
+      $('#' + selected).children().removeClass().addClass('ui transparent fluid input')
+      event.currentTarget.innerHTML = '<i class="save icon"></i>'
+    }
+  });
+  $('#left_menu_first_button').click( function() {
+    $('#div_amministratori_regionali').css('display','none');
+    $('#div_vaccini').css('display','block');
+    $('#left_menu_first_button').removeClass().addClass('item active');
+    $('#left_menu_second_button').removeClass().addClass('item');
+  });
+  $('#left_menu_second_button').click( function() {
+    $('#div_vaccini').css('display','none');
+    $('#div_amministratori_regionali').css('display','block');
+    $('#left_menu_first_button').removeClass().addClass('item');
+    $('#left_menu_second_button').removeClass().addClass('item active');
   });
 </script>
 
