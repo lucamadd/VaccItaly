@@ -13,6 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+  <script src="{{ url_for('static', filename= '/js/sha1.min.js') }}""></script>
 
   <style type="text/css">
     .hidden.menu {
@@ -117,6 +118,43 @@
   })
 ;
           }
+          if (getUrlParameter('changed') == 'True'){
+            $('body')
+        .toast({
+            title: 'La tua password è stata cambiata correttamente',
+            message: 'Adesso puoi accedere utilizzando la tua nuova password',
+            showProgress: 'bottom',
+            classProgress: 'red',
+            displayTime: 5000,
+        })
+        ;
+          } else if (getUrlParameter('changed') == 'False'){
+        $('body')
+  .toast({
+    displayTime: 0,
+    closeIcon: true,
+    message: "C'è stato un problema con il cambiamento della password."
+  })
+;
+          }
+          if (getUrlParameter('canceled') == 'True'){
+            $('body')
+        .toast({
+            message: 'Prenotazione annullata con successo',
+            showProgress: 'bottom',
+            classProgress: 'red',
+            displayTime: 3000,
+        })
+        ;
+          } else if (getUrlParameter('canceled') == 'False'){
+        $('body')
+  .toast({
+    displayTime: 0,
+    closeIcon: true,
+    message: "C'è stato un problema con l'annullamento della prenotazione."
+  })
+;
+          }
       });
       var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
@@ -133,6 +171,9 @@
     }
     return false;
 };
+function numberFormat(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
       function load_page(){
         $.ajax({
                 type: 'POST',
@@ -164,10 +205,16 @@
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 },
                 error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
                   console.log(data)
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
             });
+            
             $.ajax({
                 type: 'POST',
                 url: "{{ url_for('get_dettagli_utente') }}",
@@ -186,6 +233,11 @@
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 },
                 error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
                   console.log(data)
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
@@ -196,18 +248,31 @@
                 data: {},
                 success: function(data){
                   console.log(data)
-                  $('#prenotazioni_in_attesa').html(numberFormat(data['in_attesa']));
-                  $('#prenotazioni_completate').html(numberFormat(data['completate']));
-                  $('#prenotazioni_tot').html(numberFormat(data['in_attesa'] + data['completate']));
-                  $('#card_dimmer').removeClass('active');
+                  if (data['in_attesa'] != undefined){
+                    $('#prenotazioni_in_attesa').html(numberFormat(data['in_attesa']));
+                    $('#prenotazioni_completate').html(numberFormat(data['completate']));
+                    $('#prenotazioni_tot').html(numberFormat(data['in_attesa'] + data['completate']));
+                    $('#card_dimmer').removeClass('active');
+                  }
+                  
                 },
                 error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
                   console.log(data)
                   $('#card_dimmer').removeClass('active');
                 }
             });
       }
       load_page();
+      function hash_SHA1(stringToBeHashed){
+    sha1(stringToBeHashed);
+    var hash = sha1.create();hash.update(stringToBeHashed);
+    return hash.hex();
+  }
   </script>
 </head>
 
@@ -692,6 +757,9 @@
             {% if reservation == True %}
             <div class="ui last container">
               <div class="ui segment">
+                <div id="annulla_prenotazione_dimmer" class="ui inverted dimmer">
+                  <div class="ui loader"></div>
+                </div>
                <div class="ui header">
                  <p>Dettagli prenotazione</p>
                </div>
@@ -784,6 +852,62 @@
               </div>
             </form>
           </div>
+          <div id="div_cambia_password" class="sixteen wide mobile twelve wide computer column" style="display: none;">
+            <form id="change_password_form" class="ui equal width form segment">
+              <div class="ui two column grid">
+                <div class="column">
+                  <div class="row">
+                    <div class="fields">
+                      <div class="field">
+                        <label>Password attuale</label>
+                        <input placeholder="" name="old_password" type="password">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="fields">
+                      <div class="field">
+                        <label>Nuova password</label>
+                        <input placeholder="" name="new_password" type="password">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="fields">
+                      <div class="field">
+                        <label>Conferma password</label>
+                        <input placeholder="" name="confirm_password" type="password">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="column">
+                  <div class="ui error message" style="margin-top:1.6em;"></div>
+                </div>
+              </div>
+              <div class="ui divider"></div>
+               <div class="ui four column grid">
+                 <div class="computer only row">
+                   <div class="computer only column"></div>
+                   <div class="computer only column"></div>
+                   <div class="right floated computer column">
+                   </div>
+                   <div class="right floated computer column">
+                    <div id="send_password" class="fluid ui submit button primary" >Cambia</div>
+                   </div>
+                 </div>
+               </div>
+               <div class="ui mobile only two column grid">
+                <div class="row">
+                  <div class="column">
+                  </div>
+                  <div class=" column">
+                   <div id="send_password" class="fluid ui submit button primary" >Cambia</div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
           <div id="div_conferma_eliminazione" class="sixteen wide mobile twelve wide computer column" style="display: none;">
             <div class="ui active inverted dimmer">
               <div class="ui loader"></div>
@@ -837,6 +961,11 @@
               load_page();
             },
             error: function(data) {
+              $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
               console.log(data)
             }
         });
@@ -862,6 +991,7 @@
   });
   $('#left_menu_user_first_button').click( function() {
     $('#div_dati_personali').css('display','none');
+    $('#div_cambia_password').css('display','none');
     $('#div_prenotazioni').css('display','block');
     $('#div_conferma_eliminazione').css('display','none');
     $('#left_menu_user_first_button').removeClass().addClass('item active');
@@ -870,6 +1000,7 @@
   $('#left_menu_user_second_button').click( function() {
     $('#div_prenotazioni').css('display','none');
     $('#div_dati_personali').css('display','block');
+    $('#div_cambia_password').css('display','none');
     $('#div_conferma_eliminazione').css('display','none');
     $('#left_menu_user_first_button').removeClass().addClass('item');
     $('#left_menu_user_second_button').removeClass().addClass('item active');
@@ -880,6 +1011,7 @@
 $('.fluid.ui.red.button').click( function() {
   $('.ui.dimmer').addClass('active');
   $('#div_dati_personali').css('display','none');
+  $('#div_cambia_password').css('display','none');
   $('#div_conferma_eliminazione').css('display','block');
   setTimeout(function(){ 
     $('.ui.dimmer').removeClass('active');
@@ -898,10 +1030,114 @@ $('#delete_account_confirm_button').click( function() {
               window.location=data.result;
             },
             error: function(data) {
+              $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
               console.log(data)
             }
         });
 });
+$('.fluid.ui.primary.button').click( function() {
+  $('#div_dati_personali').css('display','none');
+  $('#div_cambia_password').css('display','block');
+});
+
+$('#change_password_form')
+    .form({
+        fields: {
+          old_password: {
+                identifier: 'old_password',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: 'Inserisci la tua password attuale'
+                    }
+                ]
+            },
+            new_password: {
+                identifier: 'new_password',
+                rules: [
+                    {
+                        type: 'minLength[6]',
+                        prompt: 'La nuove password deve contenere almeno {ruleValue} caratteri'
+                    }
+                ]
+            },
+            confirm_password: {
+                identifier: 'confirm_password',
+                rules: [
+                    {
+                        type: 'match[new_password]',
+                        prompt: 'Le password devono corrispondere'
+                    }
+                ]
+            }
+        },
+        onSuccess: function(event){
+          $('#change_password_form').addClass('loading')
+          $.ajax({
+                type: 'POST',
+                url: "{{ url_for('change_password') }}",
+                data: {
+                  'old_password': hash_SHA1($('#change_password_form').form('get value', 'old_password')),
+                  'new_password': hash_SHA1($('#change_password_form').form('get value', 'new_password'))
+                },
+                success: function(data){
+                  window.location=data.result;
+
+                },
+                error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                  console.log(data)
+                }
+            });
+        event.preventDefault();
+    }
+  })
+  ;
+  $('#annulla_prenotazione').click( function() {
+    $('body')
+  .toast({
+    message: 'Vuoi annullare la prenotazione?',
+    displayTime: 0,
+    actions:	[{
+      text: 'Sì',
+      icon: 'check',
+      class: 'primary',
+      click: function() {
+          $('#annulla_prenotazione_dimmer').addClass('active');
+          $.ajax({
+                type: 'POST',
+                url: "{{ url_for('cancel_reservation') }}",
+                data: {},
+                success: function(data){
+                  window.location=data.result;
+
+                },
+                error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                  console.log(data)
+                }
+            });
+      }
+    },{
+      text: 'No',
+      class: 'red',
+      click: function() {}
+    }]
+  })
+;
+  });
 </script>
 
 </html>

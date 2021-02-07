@@ -1,4 +1,5 @@
-import random
+from hashlib import new
+import random, string
 from flask import jsonify
 import time
 import smtplib
@@ -115,6 +116,45 @@ def send_confirmation_email(email, asl, data):
     server.sendmail('info.vaccitaly@gmail.com', email,
                                 multipart_msg.as_string().encode('utf-8'))
 
+def send_reset_password_email(email, new_password):
+    server = smtplib.SMTP('smtp.gmail.com', 587) 
+  
+    server.starttls() 
+    
+    server.login("info.vaccitaly@gmail.com", "VaccItaly2021")
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    multipart_msg = MIMEMultipart("alternative")
+
+    multipart_msg["Subject"] = 'Recupero password'
+    multipart_msg["From"] = 'VaccItaly Support' + f' <info.vaccitaly@gmail.com>'
+    multipart_msg["To"] = email
+
+    message = f'Ciao, di seguito la tua password provvisoria:\
+               \n\n{new_password}\
+               \n\nTi consigliamo di cambiare la password al tuo prossimo accesso.\
+               \n\n\nIl team di VaccItaly'
+
+    text = message
+    html = f'<html>\
+            <body>\
+            <p>Ciao, di seguito la tua password provvisoria:</p>\
+            <p>{new_password}</p>\
+               <br><p style="margin-top=2em;">Ti consigliamo di cambiare la password al tuo prossimo accesso.</p>\
+               <br><p style="margin-top=2em;">Il team di VaccItaly</p>\
+            </body>\
+            </html>'
+
+    part1 = MIMEText(text, "plain", "utf-8")
+    part2 = MIMEText(html, "html", "utf-8")
+
+    multipart_msg.attach(part1)
+    multipart_msg.attach(part2)
+
+    server.sendmail('info.vaccitaly@gmail.com', email,
+                                multipart_msg.as_string().encode('utf-8'))
+
 def get_elenco_comuni(regione):
     f = open('asl.csv')
     csv_f = csv.reader(f)
@@ -147,4 +187,8 @@ def get_regione(regione):
     elif (regione == 'valledaosta'):
         result = "Valle D'Aosta"
     return result
+
+def get_new_password():
+    new_pass = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(10))
+    return new_pass
 

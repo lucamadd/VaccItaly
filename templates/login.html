@@ -117,6 +117,7 @@
         
                     })
                     ;
+                    
             </script>
         </head>
         
@@ -129,7 +130,7 @@
             <a class="item">Info</a>
             <div class="right menu">
                 <div class="item">
-                    <a class="ui disabled button">Log in</a>
+                    <a class="ui button">Login</a>
                 </div>
                 <div class="item">
                     <a class="ui primary button" href="{{ url_for('register') }}">Registrati</a>
@@ -178,7 +179,7 @@
                         </div>
                     </div>
                     
-                    <div class="doubling stackable three column ui grid container"  style="margin-top: 3em;">
+                    <div id="login_div" class="doubling stackable three column ui grid container"  style="margin-top: 3em; display: block;">
                       <div class="column"></div>
                       <div id="form_container" class="column">
                         <form class="ui form segment" id="login_form">
@@ -200,13 +201,33 @@
                                 Non possiedi un account? <a href="{{ url_for('register') }}"> Registrati</a>
                               </div>
                               <div class="ui header" style="margin-top: 0.5em;">
-                                Hai dimenticato la password? <a href="#"> Recupera </a>
+                                Hai dimenticato la password? <a id="reset_password" style="cursor:pointer;"> Recupera </a>
                               </div>
                           </div>
                         </div>
                           <div class="column"></div>
-                          
                       </div>
+                      <div id="reset_div" class="doubling stackable three column ui grid container"  style="margin-top: 3em; display: none;">
+                        <div id="reset_dimmer" class="ui inverted dimmer">
+                            <div class="ui loader"></div>
+                          </div>
+                        <div class="column"></div>
+                        <div id="reset_form" class="column">
+                           
+                          <div class="ui form segment">
+                              
+                                <div class="field">
+                                  <label>Email per il recupero</label>
+                                  <input placeholder="" name="reset_email" type="email">
+                                </div>
+                              <div id="reset_button" class="ui primary button">Recupera</div>
+                              
+                            </div>
+                            
+                          </div>
+                            <div class="column"></div>
+                            
+                        </div>
                 </div>
         
         
@@ -216,6 +237,7 @@
             </div>
         </body>
         <script>
+            
             $('.ui.form')
                     .form({
                         fields: {
@@ -224,7 +246,7 @@
                                 rules: [
                                     {
                                         type: 'empty',
-                                        prompt: 'Inserisci la tua email o il codice fiscale'
+                                        prompt: 'Inserisci la tua email'
                                     }
                                 ]
                             },
@@ -250,18 +272,29 @@
             },
             success: function(data){
               $('#login_form').form('reset');
-              $('#login_form').removeClass().addClass('ui form segment');
               $('#message').remove();
               /*
                 $('#form_container').prepend(data);
                 //new div is called 'message'
                 $('#message').show('fast');
               */
-              window.location.href = "{{ url_for('profile') }}";
-                
+             if (!data.includes('error')){
+                window.location.href = "{{ url_for('profile') }}";
+             }
+            else {
+                $('#login_form').removeClass().addClass('ui form segment');
+                $('#form_container').prepend(data);
+                //new div is called 'message'
+                $('#message').show('fast');
+            }
                    
             },
             error: function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
               $('#login_form').removeClass().addClass('ui form segment');
               $('#message').remove();
               if (data){
@@ -277,12 +310,45 @@
     }
                     })
                     ;
-
     function hash_SHA1(stringToBeHashed){
     sha1(stringToBeHashed);
     var hash = sha1.create();hash.update(stringToBeHashed);
     return hash.hex();
   }
+  $('#reset_password').click( function() {
+    $('#login_div').css('display','none');
+    $('#reset_div').css('display','block');
+  })
+  $('#reset_button').click( function() {
+    $('#reset_dimmer').addClass('active');
+    $.ajax({
+            type: 'POST',
+            url: "{{ url_for('reset_password') }}",
+            data: { 
+                'email': $("input[name=reset_email]").val()
+            },
+            success: function(data){
+                $('#reset_form').find(":first-child").remove();
+                $('#reset_dimmer').removeClass('active');
+                console.log(data);
+                $('#reset_form').prepend(data);
+            },
+            error: function(data) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                $('#reset_form').find(":first-child").remove();
+                $('#reset_dimmer').removeClass('active');
+                console.log(data);
+                $('#reset_form').prepend('<div class="ui error message">\
+                    <div class="header">Si è verificato un errore di connessione</div>\
+                    <p>' + data + '</p>\
+                    </div>')
+            }
+        });
+  });
         </script>
         
         </html>

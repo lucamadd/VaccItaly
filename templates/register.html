@@ -364,6 +364,11 @@ $('.ui.form')
                 $('#message').show('fast');
             },
             error: function(data) {
+              $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
               $('#register_form').removeClass().addClass('ui form segment');
               $('#message').remove();
               if (data){

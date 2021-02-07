@@ -1,3 +1,4 @@
+from hashlib import new
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from flask_cors import cross_origin, CORS
 from flask_mail import Mail
@@ -67,8 +68,6 @@ def log_user():
 
     return db.log_user(email, password, session)
 
-    
-    
 
 @app.route('/login')
 def login():
@@ -200,6 +199,51 @@ def check_date():
     date_non_disponibili = []
     date_non_disponibili = db.check_date()
     return jsonify(date_non_disponibili)
+
+@app.route('/reset_password', methods = ['GET', 'POST', 'OPTIONS'])
+def reset_password():
+    data = request.form
+    email = data['email']
+    return db.reset_password(email)
+
+@app.route('/change_password', methods = ['GET', 'POST', 'OPTIONS'])
+def change_password():
+    if 'loggedin' in session:
+        data = request.form
+        old_password = data['old_password']
+        new_password = data['new_password']
+        if(db.change_password(old_password, new_password, session['email'])):
+            return jsonify({
+                'result': url_for('profile', changed=True),
+                'changed': True
+                })
+        else:
+            return jsonify({
+                'result': url_for('profile', changed=False),
+                'changed': False
+                })
+    return redirect(url_for('login'))
+
+@app.route('/cancel_reservation', methods = ['GET', 'POST', 'OPTIONS'])
+def cancel_reservation():
+    if 'loggedin' in session:
+        if(db.cancel_reservation(session['email'])):
+            return jsonify({
+                'result': url_for('profile', canceled=True),
+                'canceled': True
+                })
+        else:
+            return jsonify({
+                'result': url_for('profile', canceled=False),
+                'canceled': False
+                })
+    return redirect(url_for('login'))
+
+
+@app.route('/auto_report_bug')
+def auto_report_bug():
+    error = request.form
+    helper.send_bug_report_msg(session, 'AJAX error function', error , 'no traceback for javascript :(')
 
 @app.errorhandler(500)
 def internal_server_error(e):

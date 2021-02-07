@@ -1,6 +1,7 @@
 import read_settings
 import helper
 import mysql.connector
+import hashlib
 # Obtain connection string information from the portal
 config = {
   'host': read_settings.read('DB_SETTINGS', 'MYSQL_DATABASE_HOST'),
@@ -345,6 +346,88 @@ def check_date():
     if msg != 'ok':
         return msg
     return date
+
+def reset_password(email):
+    msg = '<div class="ui success message">\
+        <div class="header">La tua password è stata ripristinata</div>\
+        <p>Controlla la tua casella di posta per maggiori informazioni.</p>\
+        </div>'
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        msg = f'<div class="ui error message">\
+        <div class="header">Si è verificato un errore di connessione</div>\
+        <p class="ui mini text">{str(e)}</p>\
+        </div>'
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * from db_utente WHERE email = %s",(email,))
+            result = cursor.fetchall()
+            if result:
+                new_password = helper.get_new_password()
+                cursor.execute("UPDATE db_utente SET password = %s WHERE email = %s",(hashlib.sha1(new_password.encode()).hexdigest(),email))
+                helper.send_reset_password_email(email, new_password)
+            else:
+                msg = msg = f'<div class="ui error message">\
+                <div class="header">Non esiste un utente con la mail che hai inserito</div>\
+                </div>'
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            msg = f'<div class="ui error message">\
+            <div class="header">Si è verificato un errore di connessione</div>\
+            <p>{str(e)}</p>\
+            </div>'
+    return msg
+
+def change_password(old_password, new_password, email):
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM db_utente WHERE email = %s AND password = %s",(email, old_password))
+            result = cursor.fetchone()
+            if result:
+                cursor.execute("UPDATE db_utente SET password = %s WHERE email = %s AND password = %s",(new_password, email, old_password)) 
+            else:
+                return False
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            return False
+    return True
+
+def cancel_reservation(email):
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM db_prenotazione WHERE email = %s ", (email,)) 
+
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            return False
+    return True
 
 if __name__ == '__main__':
     get_totale_vaccini()
