@@ -74,6 +74,47 @@ def send_bug_report_msg(session, exception_type, exception_msg, traceback):
     server.sendmail('info.vaccitaly@gmail.com', recipient,
                                 multipart_msg.as_string().encode('utf-8'))
 
+def send_confirmation_email(email, asl, data):
+    server = smtplib.SMTP('smtp.gmail.com', 587) 
+  
+    server.starttls() 
+    
+    server.login("info.vaccitaly@gmail.com", "VaccItaly2021")
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    multipart_msg = MIMEMultipart("alternative")
+
+    multipart_msg["Subject"] = 'Conferma prenotazione'
+    multipart_msg["From"] = 'VaccItaly Support' + f' <info.vaccitaly@gmail.com>'
+    multipart_msg["To"] = email
+
+    message = f'Grazie per aver prenotato un appuntamento con VaccItaly.\
+               \n\nIl tuo appuntamento è previsto per il giorno {data} \
+               presso {asl}. Ricorda di portare con te un documento di riconoscimento.\
+               \n\n\nIl team di VaccItaly'
+
+    text = message
+    html = f'<html>\
+            <body>\
+            <p>Grazie per aver prenotato un appuntamento con VaccItaly.</p>\
+            <p>Il tuo appuntamento è previsto per il giorno {data} \
+               presso {asl}. Ricorda di portare con te un documento di riconoscimento.</p>\
+                </p>\
+               <br>\
+               <br><p style="margin-top=2em;">Il team di VaccItaly</p>\
+            </body>\
+            </html>'
+
+    part1 = MIMEText(text, "plain", "utf-8")
+    part2 = MIMEText(html, "html", "utf-8")
+
+    multipart_msg.attach(part1)
+    multipart_msg.attach(part2)
+
+    server.sendmail('info.vaccitaly@gmail.com', email,
+                                multipart_msg.as_string().encode('utf-8'))
+
 def get_elenco_comuni(regione):
     f = open('asl.csv')
     csv_f = csv.reader(f)
@@ -93,6 +134,17 @@ def get_elenco_comuni(regione):
                     lista_comuni.append(dictionary)
     return jsonify(lista_comuni)
         
-def get_numero_vaccini(regione):
-    return "{:,}".format(random.randint(10000, 90000))
+def get_regione(regione):
+    result = regione
+    if (regione == 'emiliaromagna'):
+        result = 'Emilia Romagna'
+    elif (regione == 'friuliveneziagiulia'):
+        result = 'Friuli Venezia Giulia'
+    elif (regione == 'pabolzano'):
+        result = 'Prov. Auton. Bolzano'
+    elif (regione == 'patrento'):
+        result = 'Prov. Auton. Trento'
+    elif (regione == 'valledaosta'):
+        result = "Valle D'Aosta"
+    return result
 

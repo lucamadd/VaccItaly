@@ -139,23 +139,49 @@
                 $('.ui.sidebar')
                     .sidebar('attach events', '.toc.item')
                     ;
-
+                    if (getUrlParameter('deleted') == 'True'){
+                        $('body')
+        .toast({
+            title: 'Il tuo account è stato eliminato',
+            message: 'Grazie per aver utilizzato VaccItaly',
+            showProgress: 'bottom',
+            classProgress: 'red'
+        })
+        ;
+            }
+            
             })
             ;
+            var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return typeof sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+    return false;
+};
+
+            
     </script>
 </head>
 
 <body class="pushable">
-
     <!-- Following Menu -->
     <div class="ui large top fixed hidden menu">
         <div class="ui container">
             <a class="active item" href="#">Home</a>
-            <a class="item">Campagna vaccinale</a>
+            <a class="item"">Campagna vaccinale</a>
             <a class="item">Info</a>
             <div class="right menu">
                 {% if session['nome'] %}
-                <div class="ui dropdown item" onclick="openProfile()">
+                <div class="ui dropdown item">
                     {{ session['nome'] }} <i class="dropdown icon"></i>
                     <div class="menu">
                       <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -177,10 +203,10 @@
     <!-- Sidebar Menu -->
     <div class="ui vertical inverted sidebar menu left">
         <a class="active item" href="#">Home</a>
-        <a class="item">Campagna vaccinale</a>
+        <a class="item" >Campagna vaccinale</a>
         <a class="item">Info</a>
         {% if session['nome'] %}
-        <div class="ui dropdown item" onclick="openProfile()">
+        <div class="ui dropdown item">
             {{ session['nome'] }} <i class="dropdown icon"></i>
             <div class="menu">
               <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -203,11 +229,11 @@
                         <i class="sidebar icon"></i>
                     </a>
                     <a class="active item" href="#">Home</a>
-                    <a class="item">Campagna vaccinale</a>
+                    <a class="item" >Campagna vaccinale</a>
                     <a class="item">Info</a>
                     <div class="right item">
                         {% if session['nome'] %}
-                        <div class="ui dropdown item" onclick="openProfile()">
+                        <div class="ui dropdown item">
                             {{ session['nome'] }} <i class="dropdown icon"></i>
                             <div class="menu">
                               <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -261,9 +287,11 @@
     </div>
 </body>
 <script>
-    function openProfile(){
+    $('.ui.dropdown.item').click(function() {
         window.location.href="{{url_for('profile')}}";
-    }
+    });
+    
+
 </script>
 
 </html>

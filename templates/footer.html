@@ -4,7 +4,7 @@
             <div class="three wide column">
                 <h4 class="ui inverted header">Info</h4>
                 <div class="ui inverted link list">
-                    <a href="mailto:l.maddaluno1@studenti.unisa.it?subject=[VaccItaly]%20Segnalazione%20bug" class="item">Segnala un bug</a>
+                    <a id="bug_button" href="mailto:info.vaccitaly@gmail.com?subject=[VaccItaly]%20Segnalazione%20bug" class="item">Segnala un bug</a>
                     <a href="#" class="item">Informazioni sui vaccini</a>
                     <a href="{{ url_for('terms')}}" class="item">Termini e condizioni</a>
                 </div>
@@ -30,3 +30,15 @@
         </div>
     </div>
 </div>
+<script>
+    $('#bug_button').click( function() {
+        $('body')
+            .toast({
+                title: 'Invia una email a',
+                message: 'info.vaccitaly@gmail.com',
+                position: 'bottom left',
+                showProgress: 'bottom',
+                classProgress: 'primary'
+            })
+    });
+</script>

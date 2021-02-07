@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from flask_cors import cross_origin, CORS
 from flask_mail import Mail
 import helper
@@ -79,23 +79,37 @@ def login():
 @app.route('/reserve')
 def reserve():
     if 'loggedin' in session:
-        return render_template('reserve.html', session = session)
+        reservation = db.check_prenotazione(session['cod_fis'])
+        if reservation == 1:    #già prenotato
+            return render_template('reserve.html', session = session, reservation=True)
+        elif reservation == 0:  #deve ancora prenotare
+            return render_template('reserve.html', session = session, reservation=False)
+        else:                   #admin, non può prenotare
+            return render_template('reserve.html', session = session, reservation='admin')
     return render_template('login.html', session = session)
 
 @app.route('/terms')
 def terms():
     return render_template('terms.html', session = session)
 
+
 @app.route('/profile')
 def profile():
     if 'loggedin' in session:
-        return render_template('profile.html', session = session)
+        reservation = db.check_prenotazione(session['cod_fis'])
+        if reservation == 1:    #già prenotato
+            return render_template('profile.html', session = session, reservation=True)
+        elif reservation == 0:  #deve ancora prenotare
+            return render_template('profile.html', session = session, reservation=False)
+        else:                   #admin, non può prenotare
+            return render_template('profile.html', session = session, reservation='admin')
     return redirect(url_for('login'))
 
 @app.route('/logout') 
 def logout(): 
     session.pop('loggedin', None) 
     session.pop('nome', None) 
+    session.pop('cod_fis', None)
     return redirect(url_for('login')) 
 
 @app.route('/get_elenco_comuni', methods = ['POST', 'OPTIONS']) 
@@ -111,12 +125,64 @@ def get_numero_vaccini():
     if 'loggedin' in session:
         data = request.form
         regione = data['regione']
-        return helper.get_numero_vaccini(regione)
+        return jsonify(db.get_numero_vaccini(regione))
     return redirect(url_for('index'))
+
+@app.route('/get_totale_vaccini', methods = ['GET', 'POST', 'OPTIONS']) 
+def get_totale_vaccini():
+    vaccini = []
+    vaccini = db.get_totale_vaccini()
+    return jsonify(vaccini)
 
 @app.route('/edit_vaccini', methods = ['GET', 'POST', 'OPTIONS']) 
 def edit_vaccini():
-    return ''    
+    data = request.form
+    regione = data['regione']
+    num_vaccini = data['num_vaccini']
+    return db.edit_vaccini(regione, num_vaccini)   
+
+@app.route('/add_prenotazione', methods = ['GET', 'POST', 'OPTIONS']) 
+def add_prenotazione():
+    data = request.form
+    regione = data['regione']
+    asl = data['asl'].strip()
+    data_appuntamento = data['data_appuntamento']
+    id_user = session['cod_fis']
+    print(f'id_user: {id_user}\n\
+            regione: {regione}\n\
+                asl: {asl}\n\
+               data: {data_appuntamento}')
+    return db.new_prenotazione(id_user, regione, asl, data_appuntamento)
+
+@app.route('/check_prenotazione', methods = ['GET', 'POST', 'OPTIONS']) 
+def check_prenotazione():
+    id_user = session['cod_fis']
+    return db.check_prenotazione(id_user)
+
+@app.route('/get_dettagli_utente', methods = ['GET', 'POST', 'OPTIONS']) 
+def get_dettagli_utente():
+    id_user = session['cod_fis']
+    return jsonify(db.get_dettagli_utente(id_user))
+
+@app.route('/delete_account', methods = ['GET', 'POST', 'OPTIONS']) 
+def delete_account():
+    if 'loggedin' in session:
+        data = request.form
+        email = data['email']
+        if(db.delete_account(email)):
+            session.pop('loggedin', None) 
+            session.pop('nome', None) 
+            session.pop('cod_fis', None)
+            return jsonify({
+                'result': url_for('index', deleted=True),
+                'deleted': True
+                })
+        else:
+            return jsonify({
+                'result': url_for('profile', deleted=False),
+                'deleted': False
+                })
+    return redirect(url_for('index'))
 
 @app.errorhandler(500)
 def internal_server_error(e):
@@ -126,6 +192,7 @@ def internal_server_error(e):
 @app.errorhandler(Exception)
 def handle_exception(e):
     helper.send_bug_report_msg(session, type(e), str(e), traceback.format_exc())
+    print(traceback.format_exc())
     return render_template('error.html')
 
 if __name__ == '__main__':

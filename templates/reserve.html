@@ -103,24 +103,28 @@
         $('.ui.sidebar')
           .sidebar('attach events', '.toc.item')
           ;
-          $('.mini.modal').modal({
-    onVisible: function () {
-      console.log('visible');
-    },
-    onApprove: function () {
-      console.log('approved');
-    }
-  }).modal('hide');
         
       })
+      $.ajax({
+            type: 'POST',
+            url: "{{ url_for('get_numero_vaccini') }}",
+            data: { 
+                'regione': 'Italia'
+            },
+            success: function(data){
+              $('#vaccini_regione').html(numberFormat(data));
+              $('#segment_dimmer').removeClass().addClass('ui inverted dimmer');
+            },
+            error: function(data) {
+              console.log(data)
+            }
+        });
+        var regione;
+        var num_vaccini;
   </script>
 </head>
 
 <body class="pushable dimmable">
-  <div class="ui light dimmer">
-    <div class="ui text loader"></div>
-  </div>
-  
   <!-- Following Menu -->
   <div class="ui large top fixed visible menu">
     <div class="ui container">
@@ -167,17 +171,8 @@
     </div>
 
 
-   <!--  <div class="ui last container" style="margin-top: 2em; visibility: hidden;">
-      <div id="first_segment" class="ui placeholder segment">
-        <div class="ui icon header">
-          <i class="times circle outline icon"></i>
-          Non hai effettuato ancora una prenotazione
-        </div>
-        <div class="ui primary button" id="reserve_button">Prenota ora</div>
-      </div>
-    </div>
-  -->
 
+    {% if reservation == False %}
     <div class="ui last container" style="visibility: visible; margin-top: 2em;" id="reservation">
       <div class="ui three top attached steps">
         <div class="step" id="step1">
@@ -203,6 +198,9 @@
         </div>
       </div>
       <div class="ui attached segment" id="segment1" style="padding-top: 3.4em; padding-bottom: 3.4em;">
+        <div id="segment_dimmer" class="ui active inverted dimmer">
+          <div class="ui loader"></div>
+        </div>
         <div class="ui middle aligned stackable two column grid container">
           <div class="row">
             <div class="six wide column center aligned" >
@@ -218,7 +216,6 @@
                   <div class="center aligned column">
                     <div class="ui small statistic">
                       <div class="value" id="vaccini_regione">
-                        223,204
                       </div>
                       <div class="label">
                         Vaccini disponibili
@@ -241,15 +238,6 @@
         <div class="ui middle aligned stackable two column grid container">
           <div class="row">
             <div class="six wide column center aligned">
-              <!--
-                <div class="ui search" style="margin-top: 8em;margin-bottom: 8em;">
-                <div class="ui icon input">
-                  <input class="prompt" type="text" placeholder="Comune di residenza">
-                  <i class="search icon"></i>
-                </div>
-                <div class="results"></div>
-              </div>
-              -->
               <select class="ui search dropdown middle aligned" id="select_comune" >
                 <option value="">Comune di residenza</option>
               </select>
@@ -272,11 +260,11 @@
 
         </div>
       </div>
-      <div class="ui middle aligned attached segment" id="segment3" style="display: none; padding-top: 3em; padding-bottom: 3em;">
+      <div class="ui middle aligned attached segment" id="segment3" style="display: none; padding-top: 5.5em; padding-bottom: 5.5em;">
         <div class="ui stackable two column grid container">
           <div class="row">
             <div class="column">
-              <div class="ui calendar" id="inline_calendar">
+              <div class="ui calendar" id="inline_calendar" style="height: 100%;">
               </div>
             </div>
             <div class="column middle aligned" style="padding: 4em;"> 
@@ -288,6 +276,42 @@
           </div>
         </div>
       </div>
+      <div class="ui middle aligned attached segment" id="segment4" style="display: none; height: 28.3em; ">
+        <div id="segment_dimmer2" class="ui inverted dimmer">
+          <div class="ui loader"></div>
+        </div>
+        <div class="ui fluid centered grid">
+          <div class="row"><div class="column" style="height: 33%;"></div></div>
+          <div class="row">
+            <div class="column" style="height: 33%;">
+              <h3 class="ui horizontal divider header">
+                Conferma appuntamento
+              </h3>
+                <p id="text_appuntamento" style="margin-top:2em;">
+                </p>
+            </div>
+          </div>
+          <div class="row"><div class="column" style="height: 33%;">
+            <div class="ui success message" style="display: none;">
+              <div class="header">
+                L'appuntamento è stato prenotato con successo
+              </div>
+              <p>Riceverai una mail con maggiori informazioni.</p>
+            </div>
+            <div class="ui error message" style="display: none;">
+              <div class="header">
+                C'è stato un errore nella prenotazione dell'appuntamento
+              </div>
+              <p>Ti preghiamo di riprovare. Se il problema dovesse persistere, puoi 
+                <a href="mailto:info.vaccitaly@gmail.com?subject=[VaccItaly]%20Segnalazione%20bug" data-inverted="" data-tooltip="Invia una mail a info.vaccitaly@gmail.com">contattare l'assistenza</a>.</p>
+            </div>
+            <div style="text-align: center;margin-top: 4em;">
+              <a id="home_button" href="{{ url_for('index')}}" class="ui primary button" style="display: none;">Torna alla home</a>
+            </div>
+            
+          </div></div>
+        </div>
+        </div>
       <div class="ui centered segment" style="margin-top:1em;">
         <div class="ui stackable three column grid container">
           <div class="row">
@@ -311,46 +335,41 @@
         </div>
         
     </div>
-    </div>s
+    </div>
+    {% elif reservation == True %}
+    <div class="ui last container" style="margin-top: 2em;">
+      <div id="first_segment" class="ui placeholder segment">
+        <div class="ui icon header">
+          <i class="check icon"></i>
+          <p>Hai già effettuato una prenotazione.</p>
+           <p>Puoi visualizzare la prenotazione effettuata
+            sul tuo profilo.</p>
+        </div>
+        <a href="{{ url_for('profile') }}" class="ui primary button">Vai al profilo</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="ui last container" style="margin-top: 2em;">
+      <div id="first_segment" class="ui placeholder segment">
+        <div class="ui icon header">
+          Puoi visualizzare il numero di prenotazioni effettuate sul pannello di amministrazione.
+        </div>
+        <a href="{{ url_for('profile') }}" class="ui primary button" style="margin-top:2em;">Vai al pannello di amministrazione</a>
+      </div>
+    </div>
+    {% endif %}
     {% include 'footer.html' %}
-  </div>
-  <div class="ui mini test modal front transition visible active" style="display: block !important;">
-    <div class="header">
-      Conferma appuntamento
-    </div>
-    <div class="content">
-      <p>Il tuo appuntamento è previsto per il giorno 22/02/2021 presso ASL Napoli 3 Sud. Riceverai una mail con
-        ulteriori informazioni.
-      </p>
-    </div>
-    <div class="actions">
-      <div class="ui deny basic secondary button">
-        Annulla
-      </div>
-      <div class="ui approve green right labeled icon button" id="modal_approve">
-        Conferma
-        <i class="checkmark icon"></i>
-      </div>
-    </div>
   </div>
 </body>
 <script>
    
 var nomi_asl;
-    $('#reserve_button').click(function() {
-      //$('#first_segment').css("visibility", "collapse");
-      $('#reservation').css("visibility", "visible");
-    });
     $('#avanti').click(function() {
+      if (num_vaccini <= 0)
+        return false;
       //if step1
       if ($('#step1').attr('class') == "step"){
         console.log('entered in step 1')
-        /*
-        $('.dimmer').dimmer({
-         closable: false
-      })
-      .dimmer('show');
-        */
         $('#step1').removeClass().addClass('completed disabled step');
         $('#step2').removeClass().addClass('step');
         $('#segment1').css("display", "none");
@@ -382,27 +401,10 @@ var nomi_asl;
                 }
               })
             ;
-            /*
-              $('.ui.search')
-                .search({
-                  type: 'category',
-                  source: data,
-                  error : {
-                    noResultsHeader : 'Nessun risultato',
-                    noResults       : 'Forse hai sbagliato regione?',
-                  },
-                  onSelect(result, response){
-                    $('#nome_asl').html(' ' + result['asl']);
-                    $('#avanti').removeClass().addClass('ui primary right labeled icon button')
-                  }
-                });*/
-
                 nomi_asl = data;
-                $('.dimmer').dimmer('hide');
             },
             error: function(data) {
               console.log(data)
-              $('.dimmer').dimmer('hide');
             }
         });
         
@@ -414,33 +416,58 @@ var nomi_asl;
         $('#step3').removeClass().addClass('step');
         $('#segment2').css("display", "none");
         $('#segment3').css("display", "block");
-        $('#avanti').removeClass().addClass('ui green right labeled disabled icon button');
-        $('#avanti').html('Conferma<i class="check icon"></i>');
+        $('#avanti').removeClass().addClass('ui primary right labeled disabled icon button');
+        
       }
       //if step3
       else if ($('#step3').attr('class') == "step"){
         console.log('entered in step 3')
         $('#step3').removeClass().addClass('completed disabled step');
-        $('.mini.modal').modal({
-          onDeny: function(){
-            window.location.href='#'
-    },
-    onApprove : function() {
-      $('#modal_approve').removeClass().addClass('ui approve green right labeled loading icon button');
-      return false;
-    }
-        }
-        )
-        .modal('show');
+        $('#avanti').removeClass().addClass('ui green right labeled icon button');
+        $('#avanti').html('Conferma<i class="check icon"></i>');
+        $('#segment3').css("display", "none");
+        $('#text_appuntamento').html('Il tuo appuntamento è previsto per il giorno <b>' + 
+        $('#data_appuntamento').html() + '</b> presso <b>' + $('#nome_asl').html() + '</b>.');
+        $('#segment4').css("display", "block");
+      } else if ($('#segment4').css('display') == 'block'){
+        $('#avanti').addClass('disabled');
+        $('#indietro').addClass('disabled');
+        $('#segment_dimmer2').removeClass().addClass('ui active inverted dimmer');
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('add_prenotazione') }}",
+            data: { 
+                'regione': regione,
+                'asl': $('#nome_asl').html(),
+                'data_appuntamento': $('#data_appuntamento').html()
+            },
+            success: function(data){
+              if (data == 'ok'){
+                $('.ui.success.message').css('display','block');
+              } else {
+                $('.ui.error.message').css('display','block');
+              }
+              $('#home_button').css('display','inline');
+              $('#segment_dimmer2').removeClass().addClass('ui inverted dimmer');
+              console.log(data);
+            },
+            error: function(data) {
+              $('.ui.error.message').css('display','block');
+              $('#home_button').css('display','inline');
+              $('#segment_dimmer2').removeClass().addClass('ui inverted dimmer');
+              console.log(data);
+            }
+        });
       }
     });
     $('#indietro').click(function() {
       location.reload(true);
     });
     $('#select_regione').change(function(){
-      $('#avanti').removeClass().addClass('ui primary right labeled icon button');
-      var filename = $('#select_regione').val();
-      switch (filename){
+      $('#vaccini_regione').html('');
+      $('#segment_dimmer').removeClass().addClass('ui active inverted dimmer');
+      regione = $('#select_regione').val();
+      switch (regione){
         case 'Abruzzo':
             $('#img_regione').attr('src', `{{ url_for('static', filename = '/images/regioni/abruzzo.png') }}`);
             break;
@@ -513,7 +540,12 @@ var nomi_asl;
                 'regione': $('#select_regione').val()
             },
             success: function(data){
-              $('#vaccini_regione').html(data);
+              num_vaccini = data;
+              $('#vaccini_regione').html(numberFormat(num_vaccini));
+              $('#segment_dimmer').removeClass().addClass('ui inverted dimmer');
+              if (num_vaccini > 0){
+                $('#avanti').removeClass().addClass('ui primary right labeled icon button');
+              }
             },
             error: function(data) {
               console.log(data)
@@ -545,7 +577,7 @@ $('#inline_calendar')
         return day + '/' + month + '/' + year;
       }
     },
-    minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
     maxDate: new Date(today.getFullYear(), today.getMonth() + 2, today.getDate()),
     onChange: function(date){
       if (!date) return '';
@@ -554,10 +586,13 @@ $('#inline_calendar')
         var year = date.getFullYear();
         $('#data_appuntamento').html(day + '/' + month + '/' + year)
         //mysqlDate =  day + '/' + month + '/' + year;
-        $('#avanti').removeClass().addClass('ui green right labeled icon button');
+        $('#avanti').removeClass().addClass('ui primary right labeled icon button');
     }
   })
 ;
+function numberFormat(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
 </script>
 
 </html>

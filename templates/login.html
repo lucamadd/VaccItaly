@@ -256,11 +256,7 @@
                 //new div is called 'message'
                 $('#message').show('fast');
                 if ($('#message').attr('class') == 'ui success mini message'){
-                    setTimeout(
-                        function() 
-                        {
-                            window.location.href = "{{ url_for('profile') }}";
-                        }, 1000);
+                    window.location.href = "{{ url_for('profile') }}";
                 }
                    
             },
