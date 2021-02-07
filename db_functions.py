@@ -58,13 +58,14 @@ def log_user(email, password, session):
     else:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT nome, cod_fis FROM db_utente WHERE (email = %s AND password = %s) OR (cod_fis = %s AND password = %s)", 
-            (email, password, email, password))
+            cursor.execute("SELECT nome, cod_fis, email FROM db_utente WHERE (email = %s AND password = %s)", 
+            (email, password))
             result = cursor.fetchone()
             if cursor.rowcount == 1:
                 session['loggedin'] = True
                 session['nome'] = result[0]
                 session['cod_fis'] = result[1]
+                session['email'] = result[2]
             else:
                 msg = '<div id="message" class="ui error mini message" style="display: none;">\
                 <div class="header">Credenziali errate</div></div>'
@@ -179,7 +180,7 @@ def new_prenotazione(id_user, regione, asl, data):
     else:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT cod_fis, email from db_utente WHERE cod_fis = %s OR email = %s",(id_user,id_user))
+            cursor.execute("SELECT cod_fis, email from db_utente WHERE email = %s",(id_user,))
             result = cursor.fetchone()
 
             cod_fis = result[0]
@@ -217,7 +218,7 @@ def check_prenotazione(id_user):
     else:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM db_prenotazione WHERE cod_fis = %s OR email = %s",(id_user,id_user))
+            cursor.execute("SELECT COUNT(*) FROM db_prenotazione WHERE email = %s",(id_user,))
             result = cursor.fetchone()
             msg = result[0]
             
@@ -244,7 +245,7 @@ def get_dettagli_utente(user):
                             password, regione, asl, DATE_FORMAT(data_prenotazione,'%d/%m/%Y'), is_completed \
                             FROM db_utente LEFT JOIN db_prenotazione \
                             ON db_utente.cod_fis = db_prenotazione.cod_fis \
-                            WHERE db_utente.cod_fis = %s OR db_utente.email = %s ",(user, user))
+                            WHERE db_utente.email = %s ",(user,))
             result = cursor.fetchone()
             data['cod_fis'] = result[0]
             data['email'] = result[1]
@@ -289,6 +290,61 @@ def delete_account(email):
         except Exception as e:
             msg = False
     return msg
+
+def get_prenotazioni():
+    prenotazioni = {}
+    msg = 'ok'
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        msg = str(e)
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM db_prenotazione WHERE is_completed = false")
+            result = cursor.fetchone()
+            prenotazioni['in_attesa'] = result[0]
+            
+            cursor.execute("SELECT COUNT(*) FROM db_prenotazione WHERE is_completed = true")
+            result = cursor.fetchone()
+            prenotazioni['completate'] = result[0]
+
+
+            # Cleanup
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            msg = str(e)
+    if msg != 'ok':
+        return msg
+    return prenotazioni
+
+def check_date():
+    date = []
+    msg = 'ok'
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        msg = str(e)
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT DATE_FORMAT(data_prenotazione,'%d/%m/%Y') FROM db_prenotazione GROUP BY data_prenotazione HAVING COUNT(*) >= 6")
+            result = cursor.fetchall()
+            for row in result:
+                date.append(row[0])
+            # Cleanup
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            msg = str(e)
+    if msg != 'ok':
+        return msg
+    return date
 
 if __name__ == '__main__':
     get_totale_vaccini()

@@ -79,13 +79,13 @@ def login():
 @app.route('/reserve')
 def reserve():
     if 'loggedin' in session:
-        reservation = db.check_prenotazione(session['cod_fis'])
+        if session['cod_fis'] == 'global_admin':                   #admin, non può prenotare
+            return render_template('reserve.html', session = session, reservation='admin')
+        reservation = db.check_prenotazione(session['email'])
         if reservation == 1:    #già prenotato
             return render_template('reserve.html', session = session, reservation=True)
         elif reservation == 0:  #deve ancora prenotare
             return render_template('reserve.html', session = session, reservation=False)
-        else:                   #admin, non può prenotare
-            return render_template('reserve.html', session = session, reservation='admin')
     return render_template('login.html', session = session)
 
 @app.route('/terms')
@@ -96,13 +96,13 @@ def terms():
 @app.route('/profile')
 def profile():
     if 'loggedin' in session:
-        reservation = db.check_prenotazione(session['cod_fis'])
+        if session['cod_fis'] == 'global_admin':                   #admin, non può prenotare
+            return render_template('profile.html', session = session, reservation='admin')
+        reservation = db.check_prenotazione(session['email'])
         if reservation == 1:    #già prenotato
             return render_template('profile.html', session = session, reservation=True)
         elif reservation == 0:  #deve ancora prenotare
             return render_template('profile.html', session = session, reservation=False)
-        else:                   #admin, non può prenotare
-            return render_template('profile.html', session = session, reservation='admin')
     return redirect(url_for('login'))
 
 @app.route('/logout') 
@@ -110,6 +110,7 @@ def logout():
     session.pop('loggedin', None) 
     session.pop('nome', None) 
     session.pop('cod_fis', None)
+    session.pop('email', None)
     return redirect(url_for('login')) 
 
 @app.route('/get_elenco_comuni', methods = ['POST', 'OPTIONS']) 
@@ -147,7 +148,7 @@ def add_prenotazione():
     regione = data['regione']
     asl = data['asl'].strip()
     data_appuntamento = data['data_appuntamento']
-    id_user = session['cod_fis']
+    id_user = session['email']
     print(f'id_user: {id_user}\n\
             regione: {regione}\n\
                 asl: {asl}\n\
@@ -156,12 +157,21 @@ def add_prenotazione():
 
 @app.route('/check_prenotazione', methods = ['GET', 'POST', 'OPTIONS']) 
 def check_prenotazione():
-    id_user = session['cod_fis']
+    id_user = session['email']
     return db.check_prenotazione(id_user)
+
+@app.route('/get_num_prenotazioni', methods = ['GET', 'POST', 'OPTIONS'])
+def get_num_prenotazioni():
+    if 'loggedin' in session:
+        if session['cod_fis'] == 'global_admin':
+            prenotazioni = {}
+            prenotazioni = db.get_prenotazioni()
+            return jsonify(prenotazioni)
+    return str(False)
 
 @app.route('/get_dettagli_utente', methods = ['GET', 'POST', 'OPTIONS']) 
 def get_dettagli_utente():
-    id_user = session['cod_fis']
+    id_user = session['email']
     return jsonify(db.get_dettagli_utente(id_user))
 
 @app.route('/delete_account', methods = ['GET', 'POST', 'OPTIONS']) 
@@ -173,6 +183,7 @@ def delete_account():
             session.pop('loggedin', None) 
             session.pop('nome', None) 
             session.pop('cod_fis', None)
+            session.pop('email', None)
             return jsonify({
                 'result': url_for('index', deleted=True),
                 'deleted': True
@@ -183,6 +194,12 @@ def delete_account():
                 'deleted': False
                 })
     return redirect(url_for('index'))
+
+@app.route('/check_date', methods = ['GET', 'POST', 'OPTIONS']) 
+def check_date():
+    date_non_disponibili = []
+    date_non_disponibili = db.check_date()
+    return jsonify(date_non_disponibili)
 
 @app.errorhandler(500)
 def internal_server_error(e):
