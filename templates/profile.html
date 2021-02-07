@@ -190,6 +190,22 @@
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
             });
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('get_num_prenotazioni') }}",
+                data: {},
+                success: function(data){
+                  console.log(data)
+                  $('#prenotazioni_in_attesa').html(numberFormat(data['in_attesa']));
+                  $('#prenotazioni_completate').html(numberFormat(data['completate']));
+                  $('#prenotazioni_tot').html(numberFormat(data['in_attesa'] + data['completate']));
+                  $('#card_dimmer').removeClass('active');
+                },
+                error: function(data) {
+                  console.log(data)
+                  $('#card_dimmer').removeClass('active');
+                }
+            });
       }
       load_page();
   </script>
@@ -262,31 +278,35 @@
             </a>
           </div>
           <div class="ui card" style="margin-top: 6em;">
+            <div id="card_dimmer" class="ui active inverted dimmer">
+              <div class="ui loader"></div>
+            </div>
             <div class="content">
               <div class="header">Prenotazioni</div>
               <div class="description">
-                <span class="right floated time">1.209</span>
+                <span id="prenotazioni_in_attesa" class="right floated time"></span>
                 <span class="category">In attesa</span>
               </div>
               <div class="description">
-                <span class="right floated time">9.344</span>
+                <span id="prenotazioni_completate" class="right floated time"></span>
               <span class="category">Completate</span>
               </div>
             </div>
             <div class="extra content">
               <div class="meta">
-                <span class="right floated time">10.553</span>
+                <span id="prenotazioni_tot" class="right floated time"></span>
                 <span class="category">Totale</span>
               </div>
             </div>
           </div>
         </div>
         
-        <div id="div_vaccini" class="sixteen wide mobile twelve wide computer column" style="display: block;">
+        <div id="div_vaccini" class="sixteen wide mobile twelve wide computer column" style="display: block; margin-top: -1em;">
           <div class="ui active inverted dimmer">
             <div class="ui loader"></div>
           </div>
           <table id="tab_vaccini" class="ui compact celled unstackable table">
+            
             <thead>
               <tr><th>Regione</th>
               <th>N° ASL</th>

@@ -183,7 +183,7 @@
                       <div id="form_container" class="column">
                         <form class="ui form segment" id="login_form">
                               <div class="field">
-                                <label>Email o codice fiscale</label>
+                                <label>Email</label>
                                 <input placeholder="" name="email" type="email">
                               </div>
                                 <div class="field">
@@ -252,12 +252,13 @@
               $('#login_form').form('reset');
               $('#login_form').removeClass().addClass('ui form segment');
               $('#message').remove();
+              /*
                 $('#form_container').prepend(data);
                 //new div is called 'message'
                 $('#message').show('fast');
-                if ($('#message').attr('class') == 'ui success mini message'){
-                    window.location.href = "{{ url_for('profile') }}";
-                }
+              */
+              window.location.href = "{{ url_for('profile') }}";
+                
                    
             },
             error: function(data) {
