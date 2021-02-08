@@ -1,0 +1,18 @@
+#cloud-config
+runcmd:
+  - [ sh, -xc, "sudo apt update" ]
+  - [ sh, -xc, "sudo apt -y install python3-pip" ]
+  - [ sh, -xc, "sudo mkdir /run/mydir" ]
+  - [ sh, -xc, "cd /run/mydir" ]
+  - [ sh, -xc, "git clone https://github.com/lucamadd/VaccItaly.git /run/mydir/VaccItaly" ]
+  - [ sh, -xc, "cd /run/mydir/VaccItaly" ]
+  - [ sh, -xc, "sudo apt -y install python-pip" ]
+  - [ sh, -xc, "pip3 install -r /run/mydir/VaccItaly/requirements.txt" ]
+  - [ sh, -xc, "sudo apt-get install -y nginx gunicorn3" ]
+  - [ sh, -xc, "sudo /etc/init.d/nginx start" ]
+  - [ sh, -xc, "sudo rm /etc/nginx/sites-enabled/default" ]
+  - [ sh, -xc, "sudo touch /etc/nginx/sites-available/VaccItaly" ]
+  - [ sh, -xc, "sudo ln -s /etc/nginx/sites-available/VaccItaly /etc/nginx/sites-enabled/VaccItaly" ]
+  - [ sh, -xc, "sudo cp /run/mydir/VaccItaly/VaccItaly /etc/nginx/sites-enabled/" ]
+  - [ sh, -xc, "sudo /etc/init.d/nginx restart" ]
+  - [ sh, -xc, "cd /run/mydir/VaccItaly && sudo gunicorn3 app:app -b 0.0.0.0:8080 --reload" ]
