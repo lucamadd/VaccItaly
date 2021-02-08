@@ -138,11 +138,11 @@
   <!-- Following Menu -->
   <div class="ui large top fixed visible menu">
     <div class="ui container">
-      <a class="item" href="{{ url_for('index') }}">Home</a>
-      <a class="item">Campagna vaccinale</a>
-      <a class="item">Info</a>
+      <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
       <div class="right menu">
-        <div class="ui dropdown item" onclick="window.location.href='#'">
+        <div class="ui dropdown item" >
           {{ session['nome'] }} <i class="dropdown icon" ></i>
           <div class="menu">
             <a class="item" href="{{ url_for('logout') }}">Logout</a>
@@ -155,9 +155,9 @@
 
   <!-- Sidebar Menu -->
   <div class="ui vertical inverted sidebar menu left">
-    <a class="item" href="{{ url_for('index') }}">Home</a>
-    <a class="item">Campagna vaccinale</a>
-    <a class="item">Info</a>
+    <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
     <a class="item" href="{{ url_for('login') }}">Login</a>
     <a class="item" href="{{ url_for('register') }}">Registrati</a>
   </div>
@@ -170,9 +170,9 @@
         <a class="toc item">
           <i class="sidebar icon"></i>
         </a>
-        <a class="item" href="{{ url_for('index') }}">Home</a>
-        <a class="item">Campagna vaccinale</a>
-        <a class="item">Info</a>
+        <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
         <div class="ui right dropdown item">
           <a class="ui inverted button" href="{{ url_for('login') }}">Login</a>
           <a class="ui inverted button" href="{{ url_for('register') }}">Registrati</a>
@@ -649,6 +649,9 @@ var nomi_asl;
 function numberFormat(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+$('.ui.dropdown.item').click(function() {
+        window.location.href="{{url_for('profile')}}";
+    });
 
 </script>
 

@@ -112,9 +112,9 @@
     <!-- Following Menu -->
     <div class="ui large top fixed visible menu">
         <div class="ui container">
-            <a class="item" href="{{ url_for('index') }}">Home</a>
-            <a class="item">Campagna vaccinale</a>
-            <a class="item">Info</a>
+            <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
             <div class="right menu">
                 {% if session['nome'] %}
                 <div class="ui dropdown item">
@@ -138,9 +138,9 @@
 
      <!-- Sidebar Menu -->
      <div class="ui vertical inverted sidebar menu left">
-        <a class="active item" href="#">Home</a>
-        <a class="item">Campagna vaccinale</a>
-        <a class="item">Info</a>
+        <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
         {% if session['nome'] %}
         <div class="ui dropdown item">
             {{ session['nome'] }} <i class="dropdown icon"></i>
@@ -162,9 +162,9 @@
                 <a class="toc item">
                     <i class="sidebar icon"></i>
                 </a>
-                <a class="active item" href="#">Home</a>
-                <a class="item">Campagna vaccinale</a>
-                <a class="item">Info</a>
+                <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
                 <div class="right item">
                     {% if session['nome'] %}
                     <div class="ui dropdown item">
@@ -207,6 +207,9 @@
     {% include 'footer.html' %}
 </body>
 <script>
+    $('.ui.dropdown.item').click(function() {
+        window.location.href="{{url_for('profile')}}";
+    });
 </script>
 
 </html>

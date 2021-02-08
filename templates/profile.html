@@ -281,9 +281,9 @@ function numberFormat(x) {
   <!-- Following Menu -->
   <div class="ui large top fixed visible menu">
     <div class="ui container">
-      <a class="item" href="{{ url_for('index') }}">Home</a>
-      <a class="item">Campagna vaccinale</a>
-      <a class="item">Info</a>
+      <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
       <div class="right menu">
         <div class="ui dropdown item" onclick="window.location.href='#'">
           {{ session['nome'] }} <i class="dropdown icon" ></i>
@@ -298,9 +298,9 @@ function numberFormat(x) {
 
   <!-- Sidebar Menu -->
   <div class="ui vertical inverted sidebar menu left">
-    <a class="item" href="{{ url_for('index') }}">Home</a>
-    <a class="item">Campagna vaccinale</a>
-    <a class="item">Info</a>
+    <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
     <a class="item" href="{{ url_for('login') }}">Login</a>
     <a class="item" href="{{ url_for('register') }}">Registrati</a>
   </div>
@@ -313,9 +313,9 @@ function numberFormat(x) {
         <a class="toc item">
           <i class="sidebar icon"></i>
         </a>
-        <a class="item" href="{{ url_for('index') }}">Home</a>
-        <a class="item">Campagna vaccinale</a>
-        <a class="item">Info</a>
+        <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
         <div class="ui right dropdown item">
           <a class="ui inverted button" href="{{ url_for('login') }}">Login</a>
           <a class="ui inverted button" href="{{ url_for('register') }}">Registrati</a>
@@ -367,7 +367,7 @@ function numberFormat(x) {
         </div>
         
         <div id="div_vaccini" class="sixteen wide mobile twelve wide computer column" style="display: block; margin-top: -1em;">
-          <div class="ui active inverted dimmer">
+          <div id="vaccini_dimmer" class="ui active inverted dimmer">
             <div class="ui loader"></div>
           </div>
           <table id="tab_vaccini" class="ui compact celled unstackable table">
@@ -946,7 +946,7 @@ function numberFormat(x) {
         $('#' + selected).removeClass();
         $('#' + selected).children().removeClass().addClass('ui transparent fluid input disabled')
         event.currentTarget.innerHTML = '<i class="pen icon"></i>'
-        $('.ui.dimmer').removeClass().addClass('ui active inverted dimmer');
+        $('#vaccini_dimmer').removeClass().addClass('ui active inverted dimmer');
         $('.pen.icon').parent().removeClass().addClass('selectable collapsing center aligned')
         $.ajax({
             type: 'POST',

@@ -110,49 +110,58 @@
 <body class="pushable">
 
     <!-- Following Menu -->
-    <div class="ui large top fixed visible menu">
-        <div class="ui container">
-            <a class="item" href="{{ url_for('index') }}">Home</a>
-            <a class="item">Campagna vaccinale</a>
-            <a class="item">Info</a>
-            <div class="right menu">
-                <div class="item">
-                    <a class="ui button" href="{{ url_for('login') }}">Log in</a>
-                </div>
-                <div class="item">
-                    <a class="ui primary button" href="{{ url_for('register') }}">Registrati</a>
-                </div>
-            </div>
+  <div class="ui large top fixed visible menu">
+    <div class="ui container">
+      <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
+      <div class="right menu">
+        <div class="ui dropdown item" >
+          {{ session['nome'] }} <i class="dropdown icon" ></i>
+          <div class="menu">
+            <a class="item" href="{{ url_for('logout') }}">Logout</a>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
 
-    <!-- Sidebar Menu -->
-    <div class="ui vertical inverted sidebar menu left">
-        <a class="item" href="{{ url_for('index') }}">Home</a>
-        <a class="item">Campagna vaccinale</a>
-        <a class="item">Info</a>
-        <a class="item" href="{{ url_for('login') }}">Login</a>
-        <a class="item" href="{{ url_for('register') }}">Registrati</a>
-    </div>
+  <!-- Sidebar Menu -->
+  <div class="ui vertical inverted sidebar menu left">
+    <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+            <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+            <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
+    <a class="item" href="{{ url_for('login') }}">Login</a>
+    <a class="item" href="{{ url_for('register') }}">Registrati</a>
+  </div>
 
 
     <!-- Page Contents -->
     <div class="pusher">
-        <div class="ui container">
-            <div class="ui large primary menu">
-                <a class="toc item">
-                    <i class="sidebar icon"></i>
-                </a>
-                <a class="item" href="{{ url_for('index') }}">Home</a>
-                <a class="item">Campagna vaccinale</a>
-                <a class="item">Info</a>
-                <div class="right item">
-                    <a class="ui inverted button" href="{{ url_for('login') }}">Login</a>
-                    <a class="ui inverted button" href="{{ url_for('register') }}">Registrati</a>
-                </div>
+      <div class="ui container">
+        <div class="ui large secondary inverted pointing menu">
+            <a class="toc item">
+                <i class="sidebar icon"></i>
+            </a>
+            <a class="item" href="{{ url_for('home', param='Home') }}">Home</a>
+        <a class="item" href="{{ url_for('home', param='Campagna vaccinale') }}">Campagna vaccinale</a>
+        <a class="item" href="{{ url_for('home', param='Info') }}">Info</a>
+            <div class="right item">
+                {% if session['nome'] %}
+                <div class="ui dropdown item">
+                    {{ session['nome'] }} <i class="dropdown icon"></i>
+                    <div class="menu">
+                      <a class="item" href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                  </div>
+                {% else %}
+                <a class="ui inverted button" href="{{ url_for('login') }}">Login</a>
+                <a class="ui inverted button" href="{{ url_for('register') }}">Registrati</a>
+                {% endif %}
             </div>
         </div>
+    </div>
         
         <h1 class="ui center aligned header">Termini e condizioni</h1>
         <div class="ui text container">
@@ -371,6 +380,9 @@ $('#data_nascita')
     maxDate: new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
   })
 ;
+$('.ui.dropdown.item').click(function() {
+        window.location.href="{{url_for('profile')}}";
+    });
 </script>
 
 </html>

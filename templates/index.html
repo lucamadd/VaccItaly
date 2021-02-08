@@ -157,6 +157,7 @@
     message: 'Ciao, questa è una demo. Se riscontri problemi ti prego di segnalarli con il tasto "segnala bug" in basso ad ogni pagina.'
   })
 ;
+change_header(decodeURI(document.URL.substring(document.URL.lastIndexOf('/') + 1)));
             })
             ;
             var getUrlParameter = function getUrlParameter(sParam) {
@@ -183,8 +184,8 @@
     <!-- Following Menu -->
     <div class="ui large top fixed hidden menu">
         <div class="ui container">
-            <a class="active item" href="#">Home</a>
-            <a class="item"">Campagna vaccinale</a>
+            <a class="active item">Home</a>
+            <a id="campaign_button" class="item">Campagna vaccinale</a>
             <a class="item">Info</a>
             <div class="right menu">
                 {% if session['nome'] %}
@@ -209,8 +210,8 @@
 
     <!-- Sidebar Menu -->
     <div class="ui vertical inverted sidebar menu left">
-        <a class="active item" href="#">Home</a>
-        <a class="item" >Campagna vaccinale</a>
+        <a class="active item">Home</a>
+        <a id="campaign_button" class="item" >Campagna vaccinale</a>
         <a class="item">Info</a>
         {% if session['nome'] %}
         <div class="ui dropdown item">
@@ -235,8 +236,8 @@
                     <a class="toc item">
                         <i class="sidebar icon"></i>
                     </a>
-                    <a class="active item" href="#">Home</a>
-                    <a class="item" >Campagna vaccinale</a>
+                    <a class="active item" >Home</a>
+                    <a id="campaign_button" class="item">Campagna vaccinale</a>
                     <a class="item">Info</a>
                     <div class="right item">
                         {% if session['nome'] %}
@@ -264,15 +265,42 @@
 
         </div>
 
-        <div class="ui vertical stripe segment">
+        <div id="home_segment" class="ui vertical stripe segment" style="display: block;">
+            <div class="ui middle aligned stackable grid container">
+                <div class="row">
+                    <div class="eight wide column">
+                        <h3 class="ui header">VaccItaly offre un aiuto in tempi di pandemia</h3>
+                        <p>Prova lo strumento gratuito per la prenotazione dei vaccini.</p>
+                        <h3 class="ui header">Comodo, sicuro, veloce</h3>
+                        <p>Prenota la somministrazione del vaccino presso un'ASL regionale senza uscire di casa. 
+                            Più sicuro per te, più sicuro per tutti.
+                        </p>
+                    </div>
+                    <div class="six wide right floated column">
+                        <img src="{{ url_for('static', filename = '/images/ospiti.png') }}" class="ui large bordered rounded image">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="center aligned column">
+                        <a class="ui huge button" href="https://www.governo.it/it/cscovid19/report-vaccini/">Maggiori informazioni</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="campaign_segment" class="ui vertical stripe segment" style="display: none;">
             <div class="ui middle aligned stackable grid container">
                 <div class="row">
                     <div class="eight wide column">
                         <h3 class="ui header">Campagna europea per la sensibilizzazione</h3>
-                        <p>Abbiamo svolto egregiamente il nostro lavoro. Adesso tocca ai cittadini.</p>
+                        <p>Cominciamo proteggendo il nostro personale sanitario e i nostri anziani più fragili. 
+                            A seguire ci prenderemo cura dei cittadini più vulnerabili e poi di tutti gli altri.</p>
                         <h3 class="ui header">Il 27 dicembre è iniziata la campagna vaccinale</h3>
-                        <p>Prenota la somministrazione del vaccino presso un'ASL regionale senza uscire di casa. 
-                            Più sicuro per te, più sicuro per tutti.
+                        <p>Il ministro della Salute Roberto Speranza ha presentato il 2 dicembre 2020 le linee guida del 
+                            <a href="https://www.trovanorme.salute.gov.it/norme/renderNormsanPdf?anno=2021&codLeg=78657&parte=1%20&serie=null">
+                                Piano strategico per la vaccinazione anti-SARS-CoV-2/COVID-19</a>  (aggiornato con Decreto 2 gennaio 2021), 
+                            elaborato da Ministero della Salute, Commissario Straordinario per l’Emergenza, Istituto Superiore di Sanità, 
+                            Agenas e Aifa . 
                         </p>
                     </div>
                     <div class="six wide right floated column">
@@ -286,7 +314,28 @@
                 </div>
             </div>
         </div>
+        <div id="info_segment" class="ui vertical stripe segment" style="display: none;">
+            <div class="ui middle aligned stackable grid container">
+        <div class="ui text justified container">
+          <h3 class="ui header">Come funziona VaccItaly</h3>
+          <p>Prenotare un appuntamento con VaccItaly è molto semplice: per prima cosa crea un account indicando i tuoi dati personali.
+              Successivamente cliccando il tasto <b>Prenota</b> qui in alto puoi accedere al modulo di prenotazione, dove potrai indicare
+              la regione in cui vivi e l'ASL di competenza.
+          </p>
 
+          <h3 class="ui header">Come faccio a sapere qual è la mia ASL di competenza?</h3>
+          <p>La corrispondenza ASL-Comuni è stabilita dal Ministero della Salute. È sufficiente indicare il comune nel quale risiedi e VaccItaly
+              si occuperà del resto. Dovrai infine scegliere una data tra quelle disponibili per recarti presso l'ASL per la somministrazione
+              del vaccino.
+          </p>
+
+            <h3 class="ui header">Posso annullare la mia prenotazione?</h3>
+            <p>Certo, puoi annullare la prenotazione fino al giorno prima, dal tuo profilo personale.</p>
+
+              
+        </div>
+            </div>
+        </div>
 
 
             {% include 'footer.html' %}
@@ -297,7 +346,42 @@
     $('.ui.dropdown.item').click(function() {
         window.location.href="{{url_for('profile')}}";
     });
-    
+    function change_header(element) {
+        $(".active.item").each(function() {
+            $(this).removeClass('active');
+        });
+        if (element == 'Home' || element == 'Campagna vaccinale' || element == 'Info'){
+            $(element).addClass('active')
+        }
+            if (element.innerHTML == 'Home' || element == 'Home'){
+                $(".item").each(function() {
+                if (this.innerHTML == 'Home')   
+                    $(this).addClass('active');
+                });
+            $('#campaign_segment').fadeOut(200);
+            $('#info_segment').fadeOut(200);
+            $('#home_segment').fadeIn(200);
+        } else if (element.innerHTML == 'Campagna vaccinale' || element == 'Campagna vaccinale'){
+            $(".item").each(function() {
+                if (this.innerHTML == 'Campagna vaccinale')   
+                    $(this).addClass('active');
+                });
+            $('#home_segment').fadeOut(200);
+            $('#info_segment').fadeOut(200);
+            $('#campaign_segment').fadeIn(200);
+        } else if (element.innerHTML == 'Info' || element == 'Info'){
+            $(".item").each(function() {
+                if (this.innerHTML == 'Info')   
+                    $(this).addClass('active');
+                });
+            $('#campaign_segment').fadeOut(200);
+            $('#home_segment').fadeOut(200);
+            $('#info_segment').fadeIn(200);
+        }
+    }
+    $('.item').click( function() {
+        change_header(this);
+    });
 
 </script>
 
