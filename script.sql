@@ -24,6 +24,18 @@ CREATE TABLE db_asl(
     CONSTRAINT FOREIGN KEY(regione) REFERENCES db_regione(nome_regione)
 )
 
+CREATE TABLE db_amministratori(
+    email VARCHAR(500) NOT NULL,
+    regione VARCHAR(100) NOT NULL,
+    asl VARCHAR(200) NOT NULL,
+    nome VARCHAR(500) DEFAULT '',
+    cognome VARCHAR(500) DEFAULT '',
+    password VARCHAR(40) NOT NULL,
+    CONSTRAINT PRIMARY KEY(email,asl),
+    CONSTRAINT FOREIGN KEY(regione) REFERENCES db_regione(nome_regione),
+    CONSTRAINT FOREIGN KEY(asl) REFERENCES db_asl(nome_asl)
+)
+
 CREATE TABLE db_prenotazione(
     cod_fis VARCHAR(50) NOT NULL,
     email VARCHAR(500) NOT NULL,
