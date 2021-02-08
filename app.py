@@ -20,6 +20,8 @@ app = Flask(__name__,
             static_folder='static')
 #cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.secret_key = '6724237ce80fbd35848335402ad3a074f8b3e37a' #sha1 of my day
 
 mail = Mail(app) # instantiate the mail class 
 
@@ -35,9 +37,15 @@ mail = Mail(app)
 
 
 @app.route('/')
+@app.route('/home')
+@app.route('/home/')
 @app.route('/index')
 def index():
     return render_template('index.html', session = session)
+
+@app.route('/home/<param>')
+def home(param):
+    return render_template('index.html', session = session, element=param)
 
 @app.route('/register')
 def register():
@@ -245,6 +253,11 @@ def auto_report_bug():
     error = request.form
     helper.send_bug_report_msg(session, 'AJAX error function', error , 'no traceback for javascript :(')
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
 @app.errorhandler(500)
 def internal_server_error(e):
     #set the 500 status explicitly
@@ -258,8 +271,6 @@ def handle_exception(e):
 
 if __name__ == '__main__':
     try:
-        app.config['TEMPLATES_AUTO_RELOAD'] = True
-        app.secret_key = '6724237ce80fbd35848335402ad3a074f8b3e37a' #sha1 of my day
         app.run(host='0.0.0.0', port=8080)
         
     except RuntimeError as msg:
