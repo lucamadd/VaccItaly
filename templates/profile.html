@@ -155,7 +155,132 @@
   })
 ;
           }
+          var today = new Date();
+          $('#inline_calendar')
+          .calendar({
+    type: 'date',
+    monthFirst: false,
+    firstDayOfWeek: 1,
+    text: {
+      days: ['D', 'L', 'M', 'M', 'G', 'V', 'S'],
+      months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+      monthsShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+      today: 'Oggi',
+      now: 'Ora',
+      am: 'AM',
+      pm: 'PM'
+    },
+    formatter: {
+      date: function (date, settings) {
+        if (!date) return '';
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        return day + '/' + month + '/' + year;
+      }
+    },
+    minDate: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    maxDate: new Date(today.getFullYear(), today.getMonth() + 6, today.getDate()),
+    onChange: function(date){
+      check_prenotazioni(date);
+    }
+  })
+
       });
+      function check_prenotazioni(date){
+        $('#cards_dimmer').addClass('active');
+      
+      
+      if (!date) return '';
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        mysqlDate =  day + '/' + month + '/' + year;
+        $.ajax({
+                type: 'POST',
+                url: "{{ url_for('get_prenotazioni_data') }}",
+                data: {
+                  'admin': $('#id_admin').html(),
+                  'data_prenotazione': mysqlDate
+                },
+                success: function(data){
+                  $('#div_cards').html('');
+                  for (var i=0;i<data.length;i++){
+                    nome = data[i][0]
+                    cognome = data[i][1]
+                    cod_fis = data[i][2]
+                    $('#div_cards').append('<div class="card">' +
+                '<div class="content">' +
+                  '<div class="header">' + nome + ' ' + cognome + '</div>' +
+                  '<div class="description">' +
+                    cod_fis +
+                    '</div>' +
+                    '</div>' +
+                    '<div id="complete_button" class="ui bottom attached button">' +
+                      '<i class="check icon"></i>' +
+                      'Completa prenotazione' +
+                      '</div>' +
+                      '</div>')
+                  }
+                  if (data.length == undefined){
+                    $('#div_cards').append('<div class="ui fluid container" style="text-align: center;margin-top: 8em;">\
+                                            <p>Nessuna prenotazione per il giorno selezionato.</p>\
+                                            </div>');
+                  }
+                  $('#cards_dimmer').removeClass('active');
+                  $('.ui.bottom.attached.button').click( function() {
+                    cod_fis_completed = $(this).parent().find('.description').html();
+    $('body')
+  .toast({
+    message: 'La prenotazione sarà indicata come completata. Vuoi continuare?',
+    displayTime: 0,
+    actions:	[{
+      text: 'Sì',
+      icon: 'check',
+      class: 'primary',
+      click: function() {
+          $('#cards_dimmer').addClass('active');
+          $.ajax({
+                type: 'POST',
+                url: "{{ url_for('complete_reservation') }}",
+                data: {
+                  'cod_fis': cod_fis_completed
+                },
+                success: function(data){
+                  $('#cards_dimmer').removeClass('active');
+                  check_prenotazioni(date);
+                },
+                error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                  console.log(data)
+                }
+            });
+      }
+    },{
+      text: 'No',
+      class: 'red',
+      click: function() {}
+    }]
+  })
+;
+  });
+                },
+                error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                  console.log(data)
+                  $('#cards_dimmer').removeClass('active');
+                }
+            });
+      }
+      
       var getUrlParameter = function getUrlParameter(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
@@ -220,7 +345,6 @@ function numberFormat(x) {
                 url: "{{ url_for('get_dettagli_utente') }}",
                 data: {},
                 success: function(data){
-                  console.log(data)
                   $('#data_prenotazione').html('<b>Data prenotazione: </b>' + data['data_prenotazione']);
                   $('#asl_riferimento').html('<b>ASL di riferimento: </b>' + data['asl_riferimento']);
                   $("input[name=CF]").val(data['cod_fis']);
@@ -247,7 +371,6 @@ function numberFormat(x) {
                 url: "{{ url_for('get_num_prenotazioni') }}",
                 data: {},
                 success: function(data){
-                  console.log(data)
                   if (data['in_attesa'] != undefined){
                     $('#prenotazioni_in_attesa').html(numberFormat(data['in_attesa']));
                     $('#prenotazioni_completate').html(numberFormat(data['completate']));
@@ -328,6 +451,7 @@ function numberFormat(x) {
       <i class="user cog icon"></i>
       Pannello di amministrazione
     </h4>
+    
     <div class="ui container">
       
       <div class="ui mobile reversed grid">
@@ -603,117 +727,120 @@ function numberFormat(x) {
           </table>
         
         </div>
-        <div id="div_amministratori_regionali" class="sixteen wide mobile twelve wide computer column" style="display: none;">
-          <table class="ui compact celled unstackable table">
+        <div id="div_amministratori_regionali" class="sixteen wide mobile twelve wide computer column" style="display: none; margin-top: -1em;" >
+          <div id="amm_loader" class="ui inverted dimmer">
+            <div class="ui loader"></div>
+          </div>
+          <table id="region_table" class="ui compact celled selectable unstackable table">
             <thead>
               <tr><th>Regione</th>
               <th>N° ASL</th>
               <th>Amm. regionali</th>
             </tr></thead>
             <tbody>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Abruzzo</td>
                 <td data-label="N° ASL">4</td>
-                <td id="vaccini_abruzzo" data-label="Amm. regionali">35</td>
+                <td id="vaccini_abruzzo" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Basilicata</td>
                 <td data-label="N° ASL">2</td>
                 <td id="vaccini_basilicata" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Calabria</td>
                 <td data-label="N° ASL">5</td>
                 <td id="vaccini_calabria" data-label="Amm. regionali"></td>
                 
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Campania</td>
                 <td data-label="N° ASL">7</td>
                 <td id="vaccini_campania" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Emilia Romagna</td>
                 <td data-label="N° ASL">8</td>
                 <td id="vaccini_emiliaromagna" data-label="Amm. regionali"></td>
                 
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Friuli Venezia Giulia</td>
                 <td data-label="N° ASL">5</td>
                 <td id="vaccini_friuliveneziagiulia" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Lazio</td>
                 <td data-label="N° ASL">10</td>
                 <td id="vaccini_lazio" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Liguria</td>
                 <td data-label="N° ASL">5</td>
                 <td id="vaccini_liguria" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Lombardia</td>
                 <td data-label="N° ASL">8</td>
                 <td id="vaccini_lombardia" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Marche</td>
                 <td data-label="N° ASL">1</td>
                 <td id="vaccini_marche" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Molise</td>
                 <td data-label="N° ASL">1</td>
                 <td id="vaccini_molise" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Piemonte</td>
                 <td data-label="N° ASL">12</td>
                 <td id="vaccini_piemonte" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Prov. Auton. Bolzano</td>
                 <td data-label="N° ASL">1</td>
                 <td id="vaccini_pabolzano" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Prov. Auton. Trento</td>
                 <td data-label="N° ASL">1</td>
                 <td id="vaccini_patrento" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Puglia</td>
                 <td data-label="N° ASL">6</td>
                 <td id="vaccini_puglia" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Sardegna</td>
                 <td data-label="N° ASL">1</td>
                 <td id="vaccini_sardegna" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Sicilia</td>
                 <td data-label="N° ASL">9</td>
                 <td id="vaccini_sicilia" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Toscana</td>
                 <td data-label="N° ASL">3</td>
                 <td id="vaccini_toscana" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Umbria</td>
                 <td data-label="N° ASL">2</td>
                 <td id="vaccini_umbria" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Valle D'Aosta</td>
                 <td data-label="N° ASL">1</td>
                 <td id="vaccini_valledaosta" data-label="Amm. regionali"></td>
               </tr>
-              <tr>
+              <tr class="text">
                 <td data-label="Regione">Veneto</td>
                 <td data-label="N° ASL">9</td>
                 <td id="vaccini_veneto" data-label="Amm. regionali"></td>
@@ -725,7 +852,57 @@ function numberFormat(x) {
               <th><b>67</b></th>
             </tr></tfoot>
           </table>
+          
+        </div>
+        <div  id="div_regioni" class="sixteen wide mobile twelve wide computer column" style="display: none;">
+          <table id="admin_table" class="ui compact celled unstackable table">
+            <thead>
+              <tr>
+                <th >ASL</th>
+                <th>Amm. regionale</th>
+                <th>Modifica</th>
+            </tr>
+          </thead>
+            <tbody id="admin_table_body">
+            </tbody>
+          </table>
+          <div id="button_container" class="ui fluid container" style="margin-top: 1em; display: none;">
+            <button id="back_button" class="ui left floated button"><i class="arrow left icon"></i>Indietro</button>
+              <button id="add_button" class="ui right floated primary button"><i class="user plus icon"></i>Aggiungi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% elif session['cod_fis'] == 'region' %}
+    <h4 class="ui horizontal divider header" style="margin-top: 2em; margin-bottom: 2em;">
+      <i class="user cog icon"></i>
+      Pannello di amministrazione
+    </h4>
+    <p id="id_admin" style="display: none;">{{ session['email']}}</p>
+    <div class="ui container">
+      
+      <div class="ui mobile reversed grid">
+        <div class="four wide computer only column">
+          <div class="ui secondary vertical pointing fluid menu">
+            <a id="left_menu_region_first_button" class="item active" style="cursor: default;">
+              Prenotazioni
+              <i class="calendar check icon"></i>
+            </a>
+          </div>
+          <div class="ui calendar" id="inline_calendar" style="margin-top: 4em;">
+          </div>
+          <div class="ui segment">
+            <p>Scegli una data per visualizzare le prenotazioni</p>
+          </div>
+        </div>
         
+        <div class="sixteen wide mobile twelve wide computer column" style="display: block; margin-top: -1em;">
+          <div id="cards_dimmer" class="ui inverted dimmer">
+            <div class="ui loader"></div>
+          </div>
+          <div id="div_cards" class="ui three cards" style="margin-top: 0.2em;">
+            
+          </div>
         </div>
       </div>
     </div>
@@ -956,7 +1133,6 @@ function numberFormat(x) {
                 'num_vaccini': $('#' + selected).children().children().val()
             },
             success: function(data){
-              console.log(data)
               //$('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
               load_page();
             },
@@ -1137,6 +1313,45 @@ $('#change_password_form')
     }]
   })
 ;
+  });
+  $('.text').click( function() {
+    $('#admin_table_body').html('');
+    $('#amm_loader').addClass('active');
+    var regione = $(this).children().first().html();
+    $.ajax({
+          type: 'POST',
+          url: "{{ url_for('get_admin_regione') }}",
+          data: { 
+            'regione': regione
+          },
+          success: function(data){
+            console.log(data)
+            for (var i=0;i<data.length;i++){
+              $('#admin_table_body').append("<tr>"+
+              "<td data-label=\"ASL\">" + data[i][6] + "</td>"+
+              "<td data-label=\"Amm. regionale\">" + data[i][0] + "</td>"+
+              "<td data-label=\"Modifica\"><i class=\"pen icon\"></i></td>"+
+              "</tr>");
+            }
+            $('#div_amministratori_regionali').css('display','none');
+            $('#button_container').css('display', 'block');
+            $('#div_regioni').css('display', 'block');
+            $('#amm_loader').removeClass('active');
+          },
+          error: function(data) {
+            $.ajax({
+              type: 'POST',
+              url: "{{ url_for('auto_report_bug') }}",
+              data: { 'error': data }
+          });
+            console.log(data)
+          }
+    });
+  });
+  $('#back_button').click( function() {
+    $('#div_regioni').css('display', 'none');
+    $('#button_container').css('display', 'none');
+    $('#div_amministratori_regionali').css('display','block');
   });
 </script>
 

@@ -44,7 +44,7 @@ def send_registration_email(recipient, name):
     server.sendmail('info.vaccitaly@gmail.com', recipient,
                                 multipart_msg.as_string().encode('utf-8'))
 
-def send_bug_report_msg(session, exception_type, exception_msg, traceback):
+def send_bug_report_msg(session, exception_type, exception_msg, traceback, method=None):
 
     recipient = 'info.vaccitaly@gmail.com'
     server = smtplib.SMTP('smtp.gmail.com', 587) 
@@ -61,10 +61,15 @@ def send_bug_report_msg(session, exception_type, exception_msg, traceback):
     multipart_msg["From"] = 'VaccItaly Support' + f' <info.vaccitaly@gmail.com>'
     multipart_msg["To"] = recipient
 
-    message = '----------USER----------\n\n' + str(session['loggedin']) + '\n' + str(session['nome']) + \
+    if session is not None:
+        message = '----------USER----------\n\n' + str(session['loggedin']) + '\n' + str(session['nome']) + \
                '\n' + str(session['cod_fis']) + '\n\n\n' + \
-    '----------TYPE----------\n\n' + str(exception_type) + '\n\n\n' + \
-    '----------MESSAGE----------\n\n' + exception_msg + '\n\n\n' + '----------TRACEBACK----------\n\n' + traceback
+        '----------TYPE----------\n\n' + str(exception_type) + '\n\n\n' + \
+        '----------MESSAGE----------\n\n' + exception_msg + '\n\n\n' + '----------TRACEBACK----------\n\n' + traceback
+    else:
+        message = '----------METHOD----------\n\n' + str(method) + '\n\n\n' + \
+        '----------TYPE----------\n\n' + str(exception_type) + '\n\n\n' + \
+        '----------MESSAGE----------\n\n' + exception_msg + '\n\n\n' + '----------TRACEBACK----------\n\n' + traceback
 
     text = message
 

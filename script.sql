@@ -25,13 +25,13 @@ CREATE TABLE db_asl(
 )
 
 CREATE TABLE db_amministratori(
-    email VARCHAR(500) NOT NULL,
+    id_amministratore VARCHAR(500) NOT NULL,
     regione VARCHAR(100) NOT NULL,
     asl VARCHAR(200) NOT NULL,
     nome VARCHAR(500) DEFAULT '',
     cognome VARCHAR(500) DEFAULT '',
     password VARCHAR(40) NOT NULL,
-    CONSTRAINT PRIMARY KEY(email,asl),
+    CONSTRAINT PRIMARY KEY(id_amministratore,asl),
     CONSTRAINT FOREIGN KEY(regione) REFERENCES db_regione(nome_regione),
     CONSTRAINT FOREIGN KEY(asl) REFERENCES db_asl(nome_asl)
 )

@@ -86,7 +86,7 @@ def login():
 @app.route('/reserve')
 def reserve():
     if 'loggedin' in session:
-        if session['cod_fis'] == 'global_admin':                   #admin, non può prenotare
+        if session['cod_fis'] == 'global_admin' or session['cod_fis'] == 'region':     #admin, non può prenotare
             return render_template('reserve.html', session = session, reservation='admin')
         reservation = db.check_prenotazione(session['email'])
         if reservation == 1:    #già prenotato
@@ -214,6 +214,19 @@ def reset_password():
     email = data['email']
     return db.reset_password(email)
 
+@app.route('/get_admin_regione', methods = ['GET', 'POST', 'OPTIONS'])
+def get_admin_regione():
+    data = request.form
+    regione = data['regione']
+    return jsonify(db.get_admin_regione(regione))
+
+@app.route('/get_prenotazioni_data', methods = ['GET', 'POST', 'OPTIONS'])
+def get_prenotazioni_data():
+    data = request.form
+    admin = data['admin']
+    data_prenotazione = data['data_prenotazione']
+    return jsonify(db.get_prenotazioni_data(admin, data_prenotazione))
+
 @app.route('/change_password', methods = ['GET', 'POST', 'OPTIONS'])
 def change_password():
     if 'loggedin' in session:
@@ -246,6 +259,12 @@ def cancel_reservation():
                 'canceled': False
                 })
     return redirect(url_for('login'))
+
+@app.route('/complete_reservation', methods = ['GET', 'POST', 'OPTIONS'])
+def complete_reservation():
+    data = request.form
+    cod_fis = data['cod_fis']
+    return jsonify(db.complete_reservation(cod_fis))
 
 
 @app.route('/auto_report_bug')

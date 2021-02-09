@@ -2,6 +2,7 @@ import read_settings
 import helper
 import mysql.connector
 import hashlib
+import traceback
 # Obtain connection string information from the portal
 config = {
   'host': read_settings.read('DB_SETTINGS', 'MYSQL_DATABASE_HOST'),
@@ -13,11 +14,14 @@ config = {
   'ssl_disabled': False
 }
 
+
+
 def new_user(nome, cognome, data_nascita, luogo_nascita, email, cod_fis, password):
     try:
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), new_user.__name__)
         msg = e
         print(e)
         return f'<div id="message" class="ui error mini message" style="display: none;"><div class="header">\
@@ -68,8 +72,17 @@ def log_user(email, password, session):
                 session['cod_fis'] = result[1]
                 session['email'] = result[2]
             else:
-                msg = '<div id="message" class="ui error mini message" style="display: none;">\
-                <div class="header">Credenziali errate</div></div>'
+                cursor.execute("SELECT id_amministratore FROM db_amministratori WHERE id_amministratore = %s AND password = %s", 
+                (email, password))
+                result = cursor.fetchone()
+                if cursor.rowcount == 1:
+                    session['loggedin'] = True
+                    session['cod_fis'] = 'region'
+                    session['nome'] = 'Amministratore'
+                    session['email'] = result[0]
+                else:
+                    msg = '<div id="message" class="ui error mini message" style="display: none;">\
+                    <div class="header">Credenziali errate</div></div>'
             cursor.close()
 
             # Cleanup
@@ -89,6 +102,7 @@ def edit_vaccini(regione, num_vaccini):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), edit_vaccini.__name__)
         msg = str(e)
     else:
         try:
@@ -114,6 +128,7 @@ def edit_vaccini(regione, num_vaccini):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), edit_vaccini.__name__)
             msg = str(e)
     return msg
 
@@ -124,6 +139,7 @@ def get_totale_vaccini():
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_totale_vaccini.__name__)
         msg = str(e)
     else:
         try:
@@ -139,6 +155,7 @@ def get_totale_vaccini():
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_totale_vaccini.__name__)
             msg = str(e)
     if msg != 'ok':
         return msg
@@ -151,6 +168,7 @@ def get_numero_vaccini(regione):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_numero_vaccini.__name__)
         msg = str(e)
     else:
         try:
@@ -166,6 +184,7 @@ def get_numero_vaccini(regione):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_numero_vaccini.__name__)
             msg = str(e)
     #if msg != 'ok':
         #return msg
@@ -206,6 +225,7 @@ def new_prenotazione(id_user, regione, asl, data):
             helper.send_confirmation_email(email, asl, data)
             print("Mail sent.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), new_prenotazione.__name__)
             msg = str(e)
     return msg
 
@@ -215,6 +235,7 @@ def check_prenotazione(id_user):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), check_prenotazione.__name__)
         msg = str(e)
     else:
         try:
@@ -228,44 +249,83 @@ def check_prenotazione(id_user):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), check_prenotazione.__name__)
             msg = str(e)
     return msg
 
 def get_dettagli_utente(user):
+    data = {}
+    #se l'utente è un amministratore il metodo non viene eseguito
+    if '@' in user:
+        msg = 'ok'
+        try:
+            conn = mysql.connector.connect(**config)
+            print("Connection established")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_dettagli_utente.__name__)
+            msg = str(e)
+        else:
+            try:
+                cursor = conn.cursor()
+                cursor.execute("SELECT db_utente.cod_fis, db_utente.email, nome, cognome, DATE_FORMAT(data_nascita,'%d/%m/%Y'), luogo_nascita, \
+                                password, regione, asl, DATE_FORMAT(data_prenotazione,'%d/%m/%Y'), is_completed \
+                                FROM db_utente LEFT JOIN db_prenotazione \
+                                ON db_utente.cod_fis = db_prenotazione.cod_fis \
+                                WHERE db_utente.email = %s ",(user,))
+                result = cursor.fetchone()
+                data['cod_fis'] = result[0]
+                data['email'] = result[1]
+                data['nome'] = result[2]
+                data['cognome'] = result[3]
+                data['data_nascita'] = result[4]
+                data['luogo_nascita'] = result[5]
+                data['password'] = result[6]
+                data['regione'] = result[7]
+                data['asl_riferimento'] = result[8]
+                data['data_prenotazione'] = result[9]
+                data['is_completed'] = result[10]
+                cursor.close()
+
+                # Cleanup
+                cursor.close()
+                conn.close()
+                print("Done.")
+            except Exception as e:
+                helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_dettagli_utente.__name__)
+                msg = str(e)
+        if msg != 'ok':
+            return msg
+    return data
+
+def get_prenotazioni_data(admin, data_prenotazione):
     data = {}
     msg = 'ok'
     try:
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_prenotazioni_data.__name__)
         msg = str(e)
     else:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT db_utente.cod_fis, db_utente.email, nome, cognome, DATE_FORMAT(data_nascita,'%d/%m/%Y'), luogo_nascita, \
-                            password, regione, asl, DATE_FORMAT(data_prenotazione,'%d/%m/%Y'), is_completed \
-                            FROM db_utente LEFT JOIN db_prenotazione \
-                            ON db_utente.cod_fis = db_prenotazione.cod_fis \
-                            WHERE db_utente.email = %s ",(user,))
-            result = cursor.fetchone()
-            data['cod_fis'] = result[0]
-            data['email'] = result[1]
-            data['nome'] = result[2]
-            data['cognome'] = result[3]
-            data['data_nascita'] = result[4]
-            data['luogo_nascita'] = result[5]
-            data['password'] = result[6]
-            data['regione'] = result[7]
-            data['asl_riferimento'] = result[8]
-            data['data_prenotazione'] = result[9]
-            data['is_completed'] = result[10]
-            cursor.close()
+            cursor.execute("SELECT nome, cognome, cod_fis\
+                            FROM db_prenotazione NATURAL JOIN db_utente \
+                            WHERE asl = (SELECT asl FROM db_prenotazione NATURAL JOIN\
+                                        db_amministratori \
+                            WHERE id_amministratore = %s LIMIT 1) AND data_prenotazione = STR_TO_DATE(%s,'%d/%m/%Y')\
+                                AND is_completed = 0"
+            ,(admin, data_prenotazione))
+            result = cursor.fetchall()
+            if result:
+                return result
 
             # Cleanup
             cursor.close()
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_prenotazioni_data.__name__)
             msg = str(e)
     if msg != 'ok':
         return msg
@@ -277,6 +337,7 @@ def delete_account(email):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), delete_account.__name__)
         msg = False
     else:
         try:
@@ -289,6 +350,7 @@ def delete_account(email):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), delete_account.__name__)
             msg = False
     return msg
 
@@ -299,6 +361,7 @@ def get_prenotazioni():
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_prenotazioni.__name__)
         msg = str(e)
     else:
         try:
@@ -317,6 +380,7 @@ def get_prenotazioni():
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_prenotazioni.__name__)
             msg = str(e)
     if msg != 'ok':
         return msg
@@ -329,6 +393,7 @@ def check_date():
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), check_date.__name__)
         msg = str(e)
     else:
         try:
@@ -342,6 +407,7 @@ def check_date():
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), check_date.__name__)
             msg = str(e)
     if msg != 'ok':
         return msg
@@ -356,6 +422,7 @@ def reset_password(email):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), reset_password.__name__)
         msg = f'<div class="ui error message">\
         <div class="header">Si è verificato un errore di connessione</div>\
         <p class="ui mini text">{str(e)}</p>\
@@ -379,6 +446,7 @@ def reset_password(email):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), reset_password.__name__)
             msg = f'<div class="ui error message">\
             <div class="header">Si è verificato un errore di connessione</div>\
             <p>{str(e)}</p>\
@@ -390,6 +458,7 @@ def change_password(old_password, new_password, email):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), change_password.__name__)
         return False
     else:
         try:
@@ -406,6 +475,7 @@ def change_password(old_password, new_password, email):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), change_password.__name__)
             return False
     return True
 
@@ -414,6 +484,7 @@ def cancel_reservation(email):
         conn = mysql.connector.connect(**config)
         print("Connection established")
     except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), cancel_reservation.__name__)
         return False
     else:
         try:
@@ -426,8 +497,95 @@ def cancel_reservation(email):
             conn.close()
             print("Done.")
         except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), cancel_reservation.__name__)
+            return False
+    return True
+
+def complete_reservation(cod_fis):
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), complete_reservation.__name__)
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE db_prenotazione SET is_completed = 1 WHERE \
+            cod_fis = %s ",(cod_fis,)) 
+            
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), complete_reservation.__name__)
+            return False
+    return True
+
+def get_admin_regione(regione):
+    data = []
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_admin_regione.__name__)
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM db_amministratori RIGHT JOIN db_asl ON \
+                            db_amministratori.asl = db_asl.nome_asl WHERE db_asl.regione = %s",(regione,))
+            result = cursor.fetchall()
+            print(result)
+            if result:
+                for row in result:
+                    data.append(row)
+            else:
+                return False
+            # Cleanup
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_admin_regione.__name__)
+            return False
+    return data 
+
+def insert_admin():
+    asl = []
+    regione = []
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), insert_admin.__name__)
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT * FROM db_asl")   
+            result = cursor.fetchall()
+            for row in result:
+                asl.append(row[0])
+                regione.append(row[1])
+            
+            for i in range(0,len(asl)):
+                id_admin = f"amm_{i}_{asl[i]}".replace(" ","").replace("'","").lower()
+                cursor.execute("INSERT INTO db_amministratori VALUES (%s,%s,%s,'','','24197a6cf214da8357b7bf152310be5a71f31df9')",
+                (id_admin,regione[i],asl[i])) 
+                print(f'Inserted: {id_admin} | {regione[i]} | {asl[i]} |  |  | 24197a6cf214da8357b7bf152310be5a71f31df9')
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), insert_admin.__name__)
             return False
     return True
 
 if __name__ == '__main__':
-    get_totale_vaccini()
+    pass
