@@ -31,7 +31,7 @@ CREATE TABLE db_amministratori(
     nome VARCHAR(500) DEFAULT '',
     cognome VARCHAR(500) DEFAULT '',
     password VARCHAR(40) NOT NULL,
-    CONSTRAINT PRIMARY KEY(id_amministratore,asl),
+    CONSTRAINT PRIMARY KEY(id_amministratore),
     CONSTRAINT FOREIGN KEY(regione) REFERENCES db_regione(nome_regione),
     CONSTRAINT FOREIGN KEY(asl) REFERENCES db_asl(nome_asl)
 )

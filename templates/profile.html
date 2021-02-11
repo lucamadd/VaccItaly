@@ -96,6 +96,7 @@
   <script>
     $(document)
       .ready(function () {
+        var regione_selezionata;
         $('.ui.dropdown').dropdown({
           on: 'hover',
           allowCategorySelection: true
@@ -134,6 +135,24 @@
     displayTime: 0,
     closeIcon: true,
     message: "C'è stato un problema con il cambiamento della password."
+  })
+;
+          }
+          if (getUrlParameter('admin_deleted') == 'True'){
+            $('body')
+        .toast({
+            message: 'Eliminazione effettuata con successo',
+            showProgress: 'bottom',
+            classProgress: 'red',
+            displayTime: 3000,
+        })
+        ;
+          } else if (getUrlParameter('admin_deleted') == 'False'){
+        $('body')
+  .toast({
+    displayTime: 0,
+    closeIcon: true,
+    message: "C'è stato un problema con l'eliminazione dell'amministratore."
   })
 ;
           }
@@ -296,6 +315,31 @@
     }
     return false;
 };
+function get_tot_amministratori(){
+  var totale = 0;
+  totale += parseInt($('#amm_abruzzo').html()) +
+            parseInt($('#amm_basilicata').html()) +
+            parseInt($('#amm_calabria').html()) +
+            parseInt($('#amm_campania').html()) +
+            parseInt($('#amm_emiliaromagna').html()) +
+            parseInt($('#amm_friuliveneziagiulia').html()) +
+            parseInt($('#amm_lazio').html()) +
+            parseInt($('#amm_liguria').html()) +
+            parseInt($('#amm_lombardia').html()) +
+            parseInt($('#amm_marche').html()) +
+            parseInt($('#amm_molise').html()) +
+            parseInt($('#amm_piemonte').html()) +
+            parseInt($('#amm_pabolzano').html()) +
+            parseInt($('#amm_patrento').html()) +
+            parseInt($('#amm_puglia').html()) +
+            parseInt($('#amm_sardegna').html()) +
+            parseInt($('#amm_sicilia').html()) +
+            parseInt($('#amm_toscana').html()) +
+            parseInt($('#amm_umbria').html()) +
+            parseInt($('#amm_valledaosta').html()) +
+            parseInt($('#amm_veneto').html());
+  return totale;
+}
 function numberFormat(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
@@ -339,7 +383,45 @@ function numberFormat(x) {
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
             });
-            
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('get_amm_regionali') }}",
+                data: {},
+                success: function(data){
+                  data[0][1] != undefined ? $('#amm_abruzzo').html(data[0][2]) : $('#amm_abruzzo').html('0');
+                  data[1][1] != undefined ? $('#amm_basilicata').html(data[1][2]) : $('#amm_basilicata').html('0');
+                  data[2][1] != undefined ? $('#amm_calabria').html(data[2][2]) : $('#amm_calabria').html('0');
+                  data[3][1] != undefined ? $('#amm_campania').html(data[3][2]) : $('#amm_campania').html('0');
+                  data[4][1] != undefined ? $('#amm_emiliaromagna').html(data[4][2]) : $('#amm_emiliaromagna').html('0');
+                  data[5][1] != undefined ? $('#amm_friuliveneziagiulia').html(data[5][2]) : $('#amm_friuliveneziagiulia').html('0');
+                  data[6][1] != undefined ? $('#amm_lazio').html(data[6][2]) : $('#amm_lazio').html('0');
+                  data[7][1] != undefined ? $('#amm_liguria').html(data[7][2]) : $('#amm_liguria').html('0');
+                  data[8][1] != undefined ? $('#amm_lombardia').html(data[8][2]) : $('#amm_lombardia').html('0');
+                  data[9][1] != undefined ? $('#amm_marche').html(data[9][2]) : $('#amm_marche').html('0');
+                  data[10][1] != undefined ? $('#amm_molise').html(data[10][2]) : $('#amm_molise').html('0');
+                  data[11][1] != undefined ? $('#amm_piemonte').html(data[11][2]) : $('#amm_piemonte').html('0');
+                  data[12][1] != undefined ? $('#amm_pabolzano').html(data[12][2]) : $('#amm_pabolzano').html('0');
+                  data[13][1] != undefined ? $('#amm_patrento').html(data[13][2]) : $('#amm_patrento').html('0');
+                  data[14][1] != undefined ? $('#amm_puglia').html(data[14][2]) : $('#amm_puglia').html('0');
+                  data[15][1] != undefined ? $('#amm_sardegna').html(data[15][2]) : $('#amm_sardegna').html('0');
+                  data[16][1] != undefined ? $('#amm_sicilia').html(data[16][2]) : $('#amm_sicilia').html('0');
+                  data[17][1] != undefined ? $('#amm_toscana').html(data[17][2]) : $('#amm_toscana').html('0');
+                  data[18][1] != undefined ? $('#amm_umbria').html(data[18][2]) : $('#amm_umbria').html('0');
+                  data[19][1] != undefined ? $('#amm_valledaosta').html(data[19][2]) : $('#amm_valledaosta').html('0');
+                  data[20][1] != undefined ? $('#amm_veneto').html(data[20][2]) : $('#amm_veneto').html('0');
+                  $('#amm_totale').html(get_tot_amministratori());
+                  $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
+                },
+                error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                  console.log(data)
+                  $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
+                }
+            });
             $.ajax({
                 type: 'POST',
                 url: "{{ url_for('get_dettagli_utente') }}",
@@ -735,132 +817,132 @@ function numberFormat(x) {
             <thead>
               <tr><th>Regione</th>
               <th>N° ASL</th>
-              <th>Amm. regionali</th>
+              <th class="three wide">Amm. regionali</th>
             </tr></thead>
             <tbody>
               <tr class="text">
                 <td data-label="Regione">Abruzzo</td>
                 <td data-label="N° ASL">4</td>
-                <td id="vaccini_abruzzo" data-label="Amm. regionali"></td>
+                <td id="amm_abruzzo" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Basilicata</td>
                 <td data-label="N° ASL">2</td>
-                <td id="vaccini_basilicata" data-label="Amm. regionali"></td>
+                <td id="amm_basilicata" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Calabria</td>
                 <td data-label="N° ASL">5</td>
-                <td id="vaccini_calabria" data-label="Amm. regionali"></td>
+                <td id="amm_calabria" data-label="Amm. regionali"></td>
                 
               </tr>
               <tr class="text">
                 <td data-label="Regione">Campania</td>
                 <td data-label="N° ASL">7</td>
-                <td id="vaccini_campania" data-label="Amm. regionali"></td>
+                <td id="amm_campania" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Emilia Romagna</td>
                 <td data-label="N° ASL">8</td>
-                <td id="vaccini_emiliaromagna" data-label="Amm. regionali"></td>
+                <td id="amm_emiliaromagna" data-label="Amm. regionali"></td>
                 
               </tr>
               <tr class="text">
                 <td data-label="Regione">Friuli Venezia Giulia</td>
                 <td data-label="N° ASL">5</td>
-                <td id="vaccini_friuliveneziagiulia" data-label="Amm. regionali"></td>
+                <td id="amm_friuliveneziagiulia" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Lazio</td>
                 <td data-label="N° ASL">10</td>
-                <td id="vaccini_lazio" data-label="Amm. regionali"></td>
+                <td id="amm_lazio" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Liguria</td>
                 <td data-label="N° ASL">5</td>
-                <td id="vaccini_liguria" data-label="Amm. regionali"></td>
+                <td id="amm_liguria" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Lombardia</td>
                 <td data-label="N° ASL">8</td>
-                <td id="vaccini_lombardia" data-label="Amm. regionali"></td>
+                <td id="amm_lombardia" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Marche</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_marche" data-label="Amm. regionali"></td>
+                <td id="amm_marche" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Molise</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_molise" data-label="Amm. regionali"></td>
+                <td id="amm_molise" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Piemonte</td>
                 <td data-label="N° ASL">12</td>
-                <td id="vaccini_piemonte" data-label="Amm. regionali"></td>
+                <td id="amm_piemonte" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Prov. Auton. Bolzano</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_pabolzano" data-label="Amm. regionali"></td>
+                <td id="amm_pabolzano" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Prov. Auton. Trento</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_patrento" data-label="Amm. regionali"></td>
+                <td id="amm_patrento" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Puglia</td>
                 <td data-label="N° ASL">6</td>
-                <td id="vaccini_puglia" data-label="Amm. regionali"></td>
+                <td id="amm_puglia" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Sardegna</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_sardegna" data-label="Amm. regionali"></td>
+                <td id="amm_sardegna" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Sicilia</td>
                 <td data-label="N° ASL">9</td>
-                <td id="vaccini_sicilia" data-label="Amm. regionali"></td>
+                <td id="amm_sicilia" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Toscana</td>
                 <td data-label="N° ASL">3</td>
-                <td id="vaccini_toscana" data-label="Amm. regionali"></td>
+                <td id="amm_toscana" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Umbria</td>
                 <td data-label="N° ASL">2</td>
-                <td id="vaccini_umbria" data-label="Amm. regionali"></td>
+                <td id="amm_umbria" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Valle D'Aosta</td>
                 <td data-label="N° ASL">1</td>
-                <td id="vaccini_valledaosta" data-label="Amm. regionali"></td>
+                <td id="amm_valledaosta" data-label="Amm. regionali"></td>
               </tr>
               <tr class="text">
                 <td data-label="Regione">Veneto</td>
                 <td data-label="N° ASL">9</td>
-                <td id="vaccini_veneto" data-label="Amm. regionali"></td>
+                <td id="amm_veneto" data-label="Amm. regionali"></td>
               </tr>
             </tbody>
             <tfoot>
               <tr><th><b>Totale</b></th>
               <th><b>101</b></th>
-              <th><b>67</b></th>
+              <th id="amm_totale"></th>
             </tr></tfoot>
           </table>
           
         </div>
-        <div  id="div_regioni" class="sixteen wide mobile twelve wide computer column" style="display: none;">
+        <div id="div_regioni" class="sixteen wide mobile twelve wide computer column" style="display: none;">
           <table id="admin_table" class="ui compact celled unstackable table">
             <thead>
               <tr>
                 <th >ASL</th>
                 <th>Amm. regionale</th>
-                <th>Modifica</th>
+                <th class="two wide">Modifica</th>
             </tr>
           </thead>
             <tbody id="admin_table_body">
@@ -1108,6 +1190,53 @@ function numberFormat(x) {
 
     {% include 'footer.html' %}
   </div>
+  <div class="ui small modal">
+    <div id="modal_dimmer" class="ui inverted dimmer">
+      <div class="ui loader"></div>
+    </div>
+    <div id="modal_title" class="header">Aggiungi ammistratore regionale</div>
+      <div class="content">
+        <form id="admin_form" class="ui fluid form">
+          <div class="two fields">
+            <div class="field">
+              <label>ID amministratore</label>
+              <input id="modal_id_amm" placeholder="" name="id_amm" type="text">
+              <input id="modal_old_id_amm" placeholder="" name="old_id_amm" type="hidden">
+            </div>
+            <div id="asl_select" class="field">
+              
+            </div>
+          </div>
+          <div class="two fields">
+            <div class="field">
+              <label>Nome (facoltativo)</label>
+              <input id="modal_id_name" placeholder="" name="nome_admin" type="text">
+            </div>
+            <div class="field">
+              <label>Cognome (facoltativo)</label>
+              <input id="modal_id_surname" type="text" name="cognome_admin">
+            </div>
+          </div>
+          <div class="two fields">
+            <div class="field">
+              <label>Password</label>
+              <input placeholder="" name="password1_admin" type="password">
+            </div>
+            <div class="field">
+              <label>Conferma password</label>
+              <input type="password" name="password2_admin">
+            </div>
+          </div>
+          <div id="modal_error_message" class="ui error message"></div>
+        </form>
+        
+      </div>
+      <div class="actions">
+        <div class="ui cancel button">Annulla</div>
+        <div id="modal_delete_button" class="ui red button" style="display: none;">Elimina</div>
+        <div id="modal_confirm_button" class="ui approve primary button">Conferma</div>
+      </div>
+  </div>
 </body>
 <script>
   $('.selectable.collapsing.center.aligned').click( function(event) {
@@ -1133,7 +1262,6 @@ function numberFormat(x) {
                 'num_vaccini': $('#' + selected).children().children().val()
             },
             success: function(data){
-              //$('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
               load_page();
             },
             error: function(data) {
@@ -1153,15 +1281,41 @@ function numberFormat(x) {
       $('.pen.icon').parent().removeClass().addClass('selectable collapsing center aligned disabled');
     }
   });
+  $("#admin_table").on('click','.selectable.collapsing.center.aligned.edit',function(event){
+    $('#modal_delete_button').css('display','inline');
+    $('#admin_form').form('reset');
+    $('#select_option').val($(this).siblings()[0].innerHTML).change();
+    $('#modal_id_amm').val($(this).siblings()[1].innerHTML);
+    $('#modal_old_id_amm').val($(this).siblings()[1].innerHTML);
+    $('#modal_id_name').val($(this).siblings()[2].innerHTML);
+    $('#modal_id_surname').val($(this).siblings()[3].innerHTML);
+    $('#modal_title').html('Modifica amministratore regionale');
+    $('.small.modal')
+  .modal({
+    inverted: true,
+    closable: false,
+    onDeny    : function(){
+      $('#admin_form').form('reset');
+    },
+    onApprove : function() {
+      return false;
+    }
+  })
+  .modal('setting', 'transition', 'Fade Up')
+  .modal('show')
+  ;
+  });
   $('#left_menu_first_button').click( function() {
     $('#div_amministratori_regionali').css('display','none');
     $('#div_vaccini').css('display','block');
+    $('#div_regioni').css('display', 'none');
     $('#left_menu_first_button').removeClass().addClass('item active');
     $('#left_menu_second_button').removeClass().addClass('item');
   });
   $('#left_menu_second_button').click( function() {
     $('#div_vaccini').css('display','none');
     $('#div_amministratori_regionali').css('display','block');
+    $('#div_regioni').css('display', 'none');
     $('#left_menu_first_button').removeClass().addClass('item');
     $('#left_menu_second_button').removeClass().addClass('item active');
   });
@@ -1193,6 +1347,180 @@ $('.fluid.ui.red.button').click( function() {
     $('.ui.dimmer').removeClass('active');
   }, 300);
   
+});
+$('.ui.dropdown')
+  .dropdown();
+$('#add_button').click(function() {
+  $('#modal_delete_button').css('display','none');
+  $('#admin_form').form('reset');
+  $('#modal_title').html('Aggiungi amministratore regionale');
+  $('.small.modal')
+  .modal({
+    inverted: true,
+    closable: false,
+    onDeny    : function(){
+      $('#admin_form').form('reset');
+    },
+    onApprove : function() {
+      return false;
+    }
+  })
+  .modal('setting', 'transition', 'Fade Up')
+  .modal('show')
+  ;
+  
+});
+$('#modal_delete_button').click( function() {
+  $('body')
+  .toast({
+    message: 'Sei sicuro di voler eliminare l\'amministratore?',
+    displayTime: 0,
+    actions:	[{
+      text: 'Sì',
+      icon: 'check',
+      class: 'primary',
+      click: function() {
+        $('#modal_dimmer').addClass('active');
+          $.ajax({
+                type: 'POST',
+                url: "{{ url_for('delete_admin') }}",
+                data: {
+                  'id_amm': $("input[name=old_id_amm]").val()
+                },
+                success: function(data){
+                  if (data == true){
+                    window.location.href = window.location.href.replace( /[\?#].*|$/, "?admin_deleted=True" );
+                  } else {
+                    window.location.href = window.location.href.replace( /[\?#].*|$/, "?admin_deleted=False" );
+                  }
+                  
+                },
+                error: function(data) {
+                  $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+                  console.log(data)
+                }
+            });
+      }
+    },{
+      text: 'No',
+      class: 'red',
+      click: function() {}
+    }]
+  })
+;
+});
+$('#admin_form')
+  .form({
+    fields: {
+      name: {
+        identifier: 'id_amm',
+        rules: [
+          {
+            type   : 'empty',
+            prompt : 'Inserisci l\'ID amministratore'
+          }
+        ]
+      },
+      password1: {
+        identifier: 'password1_admin',
+        rules: [
+          {
+            type   : 'empty',
+            prompt : 'Inserisci la password'
+          },
+          {
+            type   : 'minLength[6]',
+            prompt : 'La password deve contenere almeno {ruleValue} caratteri'
+          }
+        ]
+      },
+      password2: {
+        identifier: 'password2_admin',
+        rules: [
+          {
+            type   : 'match[password1_admin]',
+            prompt : 'Le password non corrispondono'
+          }
+        ]
+      }
+    }
+  })
+;
+$('#modal_confirm_button').click( function() {
+  $('#admin_form').form('validate form');
+      if( $('#admin_form').form('is valid')) {
+        $('#modal_dimmer').addClass('active');
+        if ($('#modal_title').html() == 'Aggiungi amministratore regionale'){
+          $.ajax({
+            type: 'POST',
+            url: "{{ url_for('new_admin') }}",
+            data: { 
+                'regione': regione_selezionata,
+                'id_amm': $("input[name=id_amm]").val(),
+                'asl': $("#select_option").val(),
+                'nome': $("input[name=nome_admin]").val(),
+                'cognome': $("input[name=cognome_admin]").val(),
+                'password': hash_SHA1($("input[name=password1_admin]").val())
+            },
+            success: function(data){
+              if (data == true){
+                $('.ui modal').modal('hide');
+                location.reload();
+              } else {
+                $('#admin_form').form('reset')
+                $('#admin_form').form('add errors',['ID amministratore già esistente.'])
+              }
+              $('#modal_dimmer').removeClass('active');
+            },
+            error: function(data) {
+              $('#modal_dimmer').removeClass('active');
+              $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('auto_report_bug') }}",
+                    data: { 'error': data }
+                });
+              console.log(data)
+            }
+        });
+        } else {
+            $.ajax({
+              type: 'POST',
+              url: "{{ url_for('edit_admin') }}",
+              data: { 
+                  'regione': regione_selezionata,
+                  'old_id_amm': $("input[name=old_id_amm]").val(),
+                  'asl': $("#select_option").val(),
+                  'nome': $("input[name=nome_admin]").val(),
+                  'cognome': $("input[name=cognome_admin]").val(),
+                  'password': hash_SHA1($("input[name=password1_admin]").val()),
+                  'new_id_amm': $("input[name=id_amm]").val(),
+              },
+              success: function(data){
+                if (data == true){
+                  $('.ui modal').modal('hide');
+                  location.reload();
+                } else {
+                  $('#admin_form').form('reset')
+                  $('#admin_form').form('add errors',['Si è verificato un errore.'])
+                }
+                $('#modal_dimmer').removeClass('active');
+              },
+              error: function(data) {
+                $('#modal_dimmer').removeClass('active');
+                $.ajax({
+                      type: 'POST',
+                      url: "{{ url_for('auto_report_bug') }}",
+                      data: { 'error': data }
+                  });
+                console.log(data)
+              }
+          });
+        }
+      } 
 });
 $('#delete_account_confirm_button').click( function() {
   $('.ui.dimmer').addClass('active');
@@ -1314,30 +1642,45 @@ $('#change_password_form')
   })
 ;
   });
-  $('.text').click( function() {
-    $('#admin_table_body').html('');
-    $('#amm_loader').addClass('active');
-    var regione = $(this).children().first().html();
+  function get_admin_regione(){
     $.ajax({
           type: 'POST',
           url: "{{ url_for('get_admin_regione') }}",
           data: { 
-            'regione': regione
+            'regione': regione_selezionata
           },
           success: function(data){
             console.log(data)
+            $('#asl_select').html('');
+            var data_set = [];
+            var html_to_append = "<label>ASL</label>" +
+                           "<select id=\"select_option\" name=\"asl\" class=\"ui dropdown\">";
             for (var i=0;i<data.length;i++){
-              $('#admin_table_body').append("<tr>"+
+              if (data[i][0] != null){
+                $('#admin_table_body').append("<tr>"+
               "<td data-label=\"ASL\">" + data[i][6] + "</td>"+
               "<td data-label=\"Amm. regionale\">" + data[i][0] + "</td>"+
-              "<td data-label=\"Modifica\"><i class=\"pen icon\"></i></td>"+
+              "<td style=\"display:none;\">" + data[i][3] + "</td>"+
+              "<td style=\"display:none;\">" + data[i][4] + "</td>"+
+              "<td class=\"selectable collapsing center aligned edit\" data-label=\"Modifica\"><i class=\"pen icon\"></i></td>"+
               "</tr>");
+              }
+              if (!data_set.includes(data[i][6])){
+                data_set.push(data[i][6]);
+              }
             }
+            for (var i=0; i<data_set.length;i++){
+              html_to_append += "<option value=\"" + data_set[i] + "\">" + data_set[i] + "</option>";
+            }
+            html_to_append += "</select>";
+            $('#asl_select').append(html_to_append);
             $('#div_amministratori_regionali').css('display','none');
             $('#button_container').css('display', 'block');
             $('#div_regioni').css('display', 'block');
             $('#amm_loader').removeClass('active');
-          },
+            $('.ui.dropdown')
+                .dropdown();
+            },
           error: function(data) {
             $.ajax({
               type: 'POST',
@@ -1347,6 +1690,12 @@ $('#change_password_form')
             console.log(data)
           }
     });
+  }
+  $('.text').click( function() {
+    $('#admin_table_body').html('');
+    $('#amm_loader').addClass('active');
+    regione_selezionata = $(this).children().first().html();
+    get_admin_regione();
   });
   $('#back_button').click( function() {
     $('#div_regioni').css('display', 'none');

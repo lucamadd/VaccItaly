@@ -63,7 +63,6 @@ def new_user():
     email = data['email']
     cod_fis = data['CF']
     password = data['password']
-    print(nome, cognome, data_nascita, luogo_nascita, email, cod_fis, password)
         
     return db.new_user(nome, cognome, data_nascita, luogo_nascita, email, cod_fis, password)
 
@@ -72,7 +71,6 @@ def log_user():
     data = request.form
     email = data['email']
     password = data['password']
-    print(email, password)
 
     return db.log_user(email, password, session)
 
@@ -142,6 +140,36 @@ def get_totale_vaccini():
     vaccini = db.get_totale_vaccini()
     return jsonify(vaccini)
 
+@app.route('/get_amm_regionali', methods = ['GET', 'POST', 'OPTIONS']) 
+def get_amm_regionali():
+    admin = []
+    admin = db.get_amm_regionali()
+    return jsonify(admin)
+
+@app.route('/new_admin', methods = ['GET', 'POST', 'OPTIONS'])
+def new_admin():
+    data = request.form
+    regione = data['regione']
+    id_amm = data['id_amm']
+    asl = data['asl']
+    nome = data['nome']
+    cognome = data['cognome']
+    password = data['password']
+    return jsonify(db.new_admin(regione, id_amm, asl, nome, cognome, password))
+
+@app.route('/edit_admin', methods = ['GET', 'POST', 'OPTIONS'])
+def edit_admin():
+    data = request.form
+    print(data)
+    regione = data['regione']
+    new_id_amm = data['new_id_amm']
+    asl = data['asl']
+    nome = data['nome']
+    cognome = data['cognome']
+    password = data['password']
+    old_id_amm = data['old_id_amm']
+    return jsonify(db.edit_admin(regione, new_id_amm, asl, nome, cognome, password, old_id_amm))
+
 @app.route('/edit_vaccini', methods = ['GET', 'POST', 'OPTIONS']) 
 def edit_vaccini():
     data = request.form
@@ -156,10 +184,6 @@ def add_prenotazione():
     asl = data['asl'].strip()
     data_appuntamento = data['data_appuntamento']
     id_user = session['email']
-    print(f'id_user: {id_user}\n\
-            regione: {regione}\n\
-                asl: {asl}\n\
-               data: {data_appuntamento}')
     return db.new_prenotazione(id_user, regione, asl, data_appuntamento)
 
 @app.route('/check_prenotazione', methods = ['GET', 'POST', 'OPTIONS']) 
@@ -265,6 +289,12 @@ def complete_reservation():
     data = request.form
     cod_fis = data['cod_fis']
     return jsonify(db.complete_reservation(cod_fis))
+
+@app.route('/delete_admin', methods = ['GET', 'POST', 'OPTIONS'])
+def delete_admin():
+    data = request.form
+    id_admin = data['id_amm']
+    return jsonify(db.delete_admin(id_admin))
 
 
 @app.route('/auto_report_bug')

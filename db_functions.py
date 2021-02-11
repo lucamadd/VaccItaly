@@ -161,6 +161,105 @@ def get_totale_vaccini():
         return msg
     return vaccini
 
+def get_amm_regionali():
+    admin = []
+    msg = 'ok'
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_amm_regionali.__name__)
+        msg = str(e)
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT nome_regione,regione,COUNT(*) \
+                            FROM db_amministratori RIGHT OUTER JOIN db_regione \
+                            ON db_amministratori.regione = db_regione.nome_regione \
+                            GROUP BY regione, nome_regione \
+                            HAVING nome_regione <> 'Italia' \
+                            ORDER BY nome_regione")
+            result = cursor.fetchall()
+            admin = result
+            print(result)
+            # Cleanup
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), get_amm_regionali.__name__)
+            msg = str(e)
+    if msg != 'ok':
+        return msg
+    return admin
+
+def new_admin(regione, id_amm, asl, nome, cognome, password):
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), new_admin.__name__)
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO db_amministratori VALUES (%s, %s, %s, %s, %s, %s)",
+            (id_amm, regione, asl, nome, cognome, password)) 
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), new_admin.__name__)
+            return False
+    return True
+
+def delete_admin(id_amm):
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), delete_admin.__name__)
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM db_amministratori WHERE id_amministratore = %s",
+            (id_amm,)) 
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), delete_admin.__name__)
+            return False
+    return True
+
+def edit_admin(regione, new_id_amm, asl, nome, cognome, password, old_id_amm):
+    try:
+        conn = mysql.connector.connect(**config)
+        print("Connection established")
+    except Exception as e:
+        helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), edit_admin.__name__)
+        return False
+    else:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE db_amministratori SET id_amministratore = %s, regione = %s, \
+                asl = %s, nome = %s, cognome = %s, password = %s WHERE id_amministratore = %s",
+            (new_id_amm, regione, asl, nome, cognome, password, old_id_amm)) 
+            # Cleanup
+            conn.commit()
+            cursor.close()
+            conn.close()
+            print("Done.")
+        except Exception as e:
+            helper.send_bug_report_msg(None, type(e), str(e), traceback.format_exc(), edit_admin.__name__)
+            return False
+    return True
+
 def get_numero_vaccini(regione):
     vaccini = 0
     msg = 'ok'
@@ -588,4 +687,4 @@ def insert_admin():
     return True
 
 if __name__ == '__main__':
-    pass
+    insert_admin()
