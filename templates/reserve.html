@@ -121,7 +121,7 @@
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-              console.log(data)
+              //console.log(data)
             }
         });
         var regione;
@@ -382,7 +382,7 @@ var nomi_asl;
         return false;
       //if step1
       if ($('#step1').attr('class') == "step"){
-        console.log('entered in step 1')
+        //console.log('entered in step 1')
         $('#step1').removeClass().addClass('completed disabled step');
         $('#step2').removeClass().addClass('step');
         $('#segment1').css("display", "none");
@@ -422,14 +422,14 @@ var nomi_asl;
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-              console.log(data)
+              //console.log(data)
             }
         });
         
       }
       //if step2 
       else if ($('#step2').attr('class') == "step"){
-        console.log('entered in step 2')
+        //console.log('entered in step 2')
         $('#step2').removeClass().addClass('completed disabled step');
         $('#step3').removeClass().addClass('step');
         $('#segment2').css("display", "none");
@@ -498,13 +498,13 @@ var nomi_asl;
                     data: { 'error': data }
                 });
               $('#calendar_dimmer').removeClass('active');
-              console.log(data);
+              //console.log(data);
             }
         });
       }
       //if step3
       else if ($('#step3').attr('class') == "step"){
-        console.log('entered in step 3')
+        //console.log('entered in step 3')
         $('#step3').removeClass().addClass('completed disabled step');
         $('#avanti').removeClass().addClass('ui green right labeled icon button');
         $('#avanti').html('Conferma<i class="check icon"></i>');
@@ -532,7 +532,7 @@ var nomi_asl;
               }
               $('#home_button').css('display','inline');
               $('#segment_dimmer2').removeClass().addClass('ui inverted dimmer');
-              console.log(data);
+              //console.log(data);
             },
             error: function(data) {
               $.ajax({
@@ -543,7 +543,7 @@ var nomi_asl;
               $('.ui.error.message').css('display','block');
               $('#home_button').css('display','inline');
               $('#segment_dimmer2').removeClass().addClass('ui inverted dimmer');
-              console.log(data);
+              //console.log(data);
             }
         });
       }
@@ -641,7 +641,7 @@ var nomi_asl;
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-              console.log(data)
+              //console.log(data)
             }
         });
 });

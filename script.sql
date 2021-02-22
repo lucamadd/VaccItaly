@@ -49,11 +49,6 @@ CREATE TABLE db_prenotazione(
     CONSTRAINT FOREIGN KEY(asl) REFERENCES db_asl(nome_asl)
 )
 
-----update to do
-UPDATE db_regione
-SET num_vaccini = num_vaccini + 20
-WHERE nome_regione = 'Lazio';
-
 ----similtrigger
 UPDATE db_regione
 SET num_vaccini = (SELECT sum(num_vaccini)

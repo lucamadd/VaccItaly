@@ -27,8 +27,8 @@ def send_registration_email(recipient, name):
             <body>\
             <p>Ciao {name},<br>\
             grazie per esserti registrato a VaccItaly. Se già sai come funziona il sito, puoi prenotare un appuntamento\
-            <a href="#">cliccando qui</a>.</p>\
-            <p>Se vuoi sapere di più su come funziona, ti consigliamo di dare un\'occhiata <a href="#">qui</a>.</p>\
+            <a href="http://vaccitaly.francecentral.cloudapp.azure.com/reserve">cliccando qui</a>.</p>\
+            <p>Se vuoi sapere di più su come funziona, ti consigliamo di dare un\'occhiata <a href="http://vaccitaly.francecentral.cloudapp.azure.com/home/Info">qui</a>.</p>\
             <p></p>\
             <p></p>\
             <p style="margin-top=3em;" >Il team di VaccItaly</p>\

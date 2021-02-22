@@ -275,7 +275,7 @@
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                 }
             });
       }
@@ -294,7 +294,7 @@
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                   $('#cards_dimmer').removeClass('active');
                 }
             });
@@ -379,7 +379,7 @@ function numberFormat(x) {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
             });
@@ -418,7 +418,7 @@ function numberFormat(x) {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
             });
@@ -444,7 +444,7 @@ function numberFormat(x) {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                   $('.ui.dimmer').removeClass().addClass('ui inverted dimmer');
                 }
             });
@@ -467,7 +467,7 @@ function numberFormat(x) {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                   $('#card_dimmer').removeClass('active');
                 }
             });
@@ -1270,7 +1270,7 @@ function numberFormat(x) {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-              console.log(data)
+              //console.log(data)
             }
         });
       }
@@ -1401,7 +1401,7 @@ $('#modal_delete_button').click( function() {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                 }
             });
       }
@@ -1483,7 +1483,7 @@ $('#modal_confirm_button').click( function() {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-              console.log(data)
+              //console.log(data)
             }
         });
         } else {
@@ -1516,7 +1516,7 @@ $('#modal_confirm_button').click( function() {
                       url: "{{ url_for('auto_report_bug') }}",
                       data: { 'error': data }
                   });
-                console.log(data)
+                //console.log(data)
               }
           });
         }
@@ -1539,7 +1539,7 @@ $('#delete_account_confirm_button').click( function() {
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-              console.log(data)
+              //console.log(data)
             }
         });
 });
@@ -1598,7 +1598,7 @@ $('#change_password_form')
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                 }
             });
         event.preventDefault();
@@ -1630,7 +1630,7 @@ $('#change_password_form')
                     url: "{{ url_for('auto_report_bug') }}",
                     data: { 'error': data }
                 });
-                  console.log(data)
+                  //console.log(data)
                 }
             });
       }
@@ -1650,7 +1650,7 @@ $('#change_password_form')
             'regione': regione_selezionata
           },
           success: function(data){
-            console.log(data)
+            //console.log(data)
             $('#asl_select').html('');
             var data_set = [];
             var html_to_append = "<label>ASL</label>" +
@@ -1687,7 +1687,7 @@ $('#change_password_form')
               url: "{{ url_for('auto_report_bug') }}",
               data: { 'error': data }
           });
-            console.log(data)
+            //console.log(data)
           }
     });
   }
