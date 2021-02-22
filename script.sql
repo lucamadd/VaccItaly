@@ -186,7 +186,7 @@ INSERT INTO db_asl VALUES
     ('Azienda Per La Tutela Della Salute','Sardegna')
 
 INSERT INTO db_utente VALUES
-    ('global_admin','admin@admin.com',
+    ('global_admin','global_admin',
     'Amministratore','VaccItaly',
     STR_TO_DATE('19/05/1996','%d/%m/%Y'),
     'VaccItaly','c4a42607d8690946a9b740dd9d875ec84d0d8fab')
